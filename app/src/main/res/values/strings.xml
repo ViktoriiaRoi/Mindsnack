@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MindSnack</string>
+    <string name="screen_home">Home</string>
+    <string name="screen_search">Search</string>
+    <string name="screen_saved">Saved</string>
+    <string name="screen_profile">Profile</string>
 </resources>
