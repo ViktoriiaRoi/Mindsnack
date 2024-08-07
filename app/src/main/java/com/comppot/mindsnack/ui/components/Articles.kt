@@ -158,14 +158,14 @@ private fun ArticleImage(imageUrl: String, modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun ArticleCardPreview() {
-    val article = Article(1, "", "How to make beautiful design using physics", 1716226826, 5)
+    val article = Article(1, "", "How to make beautiful design using physics", 1716226826, 5, 1)
     ArticleCard(article, modifier = Modifier.fillMaxWidth())
 }
 
 @Preview
 @Composable
 private fun SavedArticleCardPreview() {
-    val article = Article(1, "", "How to make beautiful design using physics", 1716226826, 5)
+    val article = Article(1, "", "How to make beautiful design using physics", 1716226826, 5, 1)
     SavedArticleCard(article, modifier = Modifier.width(200.dp))
 }
 

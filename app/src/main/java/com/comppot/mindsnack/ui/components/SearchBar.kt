@@ -24,13 +24,16 @@ import androidx.compose.ui.unit.dp
 import com.comppot.mindsnack.R
 
 @Composable
-fun ArticleSearchBar(modifier: Modifier = Modifier) {
+fun ArticleSearchBar(modifier: Modifier = Modifier, onSearch: (String) -> Unit = {}) {
     val focusManager = LocalFocusManager.current
     var text by rememberSaveable { mutableStateOf("") }
 
     DockedSearchBar(
         query = text,
-        onQueryChange = { text = it },
+        onQueryChange = {
+            text = it
+            onSearch(text)
+        },
         onSearch = { focusManager.clearFocus() },
         active = false,
         onActiveChange = { },
@@ -38,7 +41,10 @@ fun ArticleSearchBar(modifier: Modifier = Modifier) {
         leadingIcon = { SearchIcon() },
         trailingIcon = {
             if (text.isNotEmpty()) {
-                ClearIcon { text = "" }
+                ClearIcon {
+                    text = ""
+                    onSearch(text)
+                }
             }
         },
         colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),

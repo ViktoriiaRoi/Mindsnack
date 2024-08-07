@@ -1,6 +1,7 @@
 package com.comppot.mindsnack.ui.screens.tab.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,58 +9,73 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.comppot.mindsnack.R
 import com.comppot.mindsnack.model.Article
 import com.comppot.mindsnack.model.Category
 import com.comppot.mindsnack.ui.components.ArticleCard
 import com.comppot.mindsnack.ui.components.CategoryItem
+import com.comppot.mindsnack.ui.components.FullScreenLoading
 
 @Composable
-fun HomeScreen(openArticle: (Long) -> Unit = {}) {
-    val articleList = List(7) { index -> exampleArticle(id = index) }
-    val categoryList = listOf(
-        Category(0, "All"),
-        Category(1, "Science"),
-        Category(2, "Psychology"),
-        Category(3, "Music"),
-        Category(4, "Space"),
-        Category(5, "Movies")
-    )
+fun HomeScreen(openArticle: (Long) -> Unit = {}, viewModel: HomeViewModel = hiltViewModel()) {
+    val state = viewModel.homeState.collectAsState().value
+
     Column {
-        CategoryList(categoryList)
-        ArticleList(articleList, openArticle)
+        CategoryList(state.categories, state.selectedCategory, viewModel::selectCategory)
+        when {
+            state.isLoading -> FullScreenLoading()
+            state.articles.isEmpty() -> NoArticles()
+            else -> ArticleList(state.articles, openArticle)
+        }
     }
 }
 
 @Composable
-private fun CategoryList(categoryList: List<Category>) {
-    var selectedId by remember { mutableIntStateOf(0) }
+private fun CategoryList(
+    categories: List<Category>,
+    selectedCategory: Category,
+    onSelectCategory: (Category) -> Unit
+) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(categoryList) {
-            CategoryItem(it, isSelected = selectedId == it.id) { selectedId = it.id }
+        items(categories) {
+            CategoryItem(it, isSelected = selectedCategory == it) { onSelectCategory(it) }
         }
     }
 }
 
 @Composable
-private fun ArticleList(articleList: List<Article>, openArticle: (Long) -> Unit) {
+private fun ArticleList(articles: List<Article>, openArticle: (Long) -> Unit) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(articleList) {
+        items(articles) {
             ArticleCard(it, Modifier.fillMaxWidth(), openArticle)
         }
+    }
+}
+
+@Composable
+private fun NoArticles() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            stringResource(id = R.string.home_screen_no_articles),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }
 
@@ -68,11 +84,3 @@ private fun ArticleList(articleList: List<Article>, openArticle: (Long) -> Unit)
 private fun HomeScreenPreview() {
     HomeScreen()
 }
-
-private fun exampleArticle(id: Int) = Article(
-    id.toLong(),
-    "https://static.remove.bg/sample-gallery/graphics/bird-thumbnail.jpg",
-    "How to make beautiful design using physics",
-    1716226826,
-    5
-)
