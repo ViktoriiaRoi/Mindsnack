@@ -25,10 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -91,10 +87,12 @@ fun TabBottomBar(bottomNavController: NavHostController) {
 }
 
 @Composable
-fun ArticleBottomBar(initialSavedCount: Int, navigateUp: () -> Unit = {}) {
-    var savedCount by remember { mutableIntStateOf(initialSavedCount) }
-    var isSaved by remember { mutableStateOf(false) }
-
+fun ArticleBottomBar(
+    isSaved: Boolean,
+    savedCount: Int,
+    onSavedClick: (Boolean) -> Unit = {},
+    navigateUp: () -> Unit = {}
+) {
     NavigationBar(tonalElevation = 0.dp) {
         BottomToolbarItem(onClick = navigateUp) {
             Icon(
@@ -102,10 +100,7 @@ fun ArticleBottomBar(initialSavedCount: Int, navigateUp: () -> Unit = {}) {
                 contentDescription = stringResource(id = R.string.icon_back)
             )
         }
-        BottomToolbarItem({
-            isSaved = !isSaved
-            savedCount = initialSavedCount + if (isSaved) 1 else 0
-        }) {
+        BottomToolbarItem(onClick = { onSavedClick(!isSaved) }) {
             SaveArticleIcon(isSaved, savedCount)
         }
         BottomToolbarItem {
@@ -153,5 +148,5 @@ private fun TabBottomBarPreview() {
 @Preview
 @Composable
 private fun ArticleBottomBarPreview() {
-    ArticleBottomBar(0)
+    ArticleBottomBar(false, 0)
 }

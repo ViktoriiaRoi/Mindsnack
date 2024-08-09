@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,12 +28,12 @@ import com.comppot.mindsnack.ui.components.SavedArticleCard
 
 @Composable
 fun SavedScreen(openArticle: (Long) -> Unit = {}, viewModel: SavedViewModel = hiltViewModel()) {
-    val state = viewModel.savedState.collectAsState().value
+    val articles = viewModel.savedArticles.collectAsState(null).value
 
     when {
-        state.isLoading -> FullScreenLoading()
-        state.articles.isEmpty() -> NoArticles()
-        else -> ArticleList(state.articles, openArticle)
+        articles == null -> FullScreenLoading()
+        articles.isEmpty() -> NoArticles()
+        else -> ArticleList(articles, openArticle)
     }
 }
 
@@ -41,6 +44,7 @@ private fun ArticleList(articles: List<Article>, openArticle: (Long) -> Unit) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxSize()
     ) {
         items(articles) {
             SavedArticleCard(it, Modifier.fillMaxWidth(), openArticle)

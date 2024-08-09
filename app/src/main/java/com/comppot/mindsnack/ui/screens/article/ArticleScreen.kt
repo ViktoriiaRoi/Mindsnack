@@ -42,14 +42,15 @@ fun ArticleScreen(
     navigateUp: () -> Unit = {},
 ) {
     val state = viewModel.articleState.collectAsState().value
-    val savedCount = state.articleDetails?.savedCount ?: 0
 
     LaunchedEffect(Unit) {
         viewModel.fetchArticleDetails(articleId)
     }
 
     Scaffold(
-        bottomBar = { ArticleBottomBar(savedCount, navigateUp) },
+        bottomBar = {
+            ArticleBottomBar(state.isSaved, state.savedCount, viewModel::updateSave, navigateUp)
+        },
         containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {

@@ -1,31 +1,28 @@
 package com.comppot.mindsnack.ui.screens.tab.saved
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.comppot.mindsnack.data.article.ArticleRepository
+import com.comppot.mindsnack.data.settings.SettingsRepository
+import com.comppot.mindsnack.model.Article
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
 class SavedViewModel @Inject constructor(
-    private val articleRepository: ArticleRepository
+    private val articleRepository: ArticleRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
-    private val _savedState = MutableStateFlow(SavedState())
-    val savedState = _savedState.asStateFlow()
 
-    init {
-        initState()
+    val savedArticles: Flow<List<Article>> = settingsRepository.savedArticleIds.map {
+        getArticlesFromIds(it)
     }
 
-    private fun initState() = viewModelScope.launch {
-        _savedState.emit(
-            _savedState.value.copy(
-                isLoading = false,
-                articles = articleRepository.getAllArticles()
-            )
-        )
+    private fun getArticlesFromIds(ids: List<Long>): List<Article> {
+        val articles = articleRepository.getAllArticles()
+        return ids.mapNotNull { id ->
+            articles.find { it.id == id }
+        }
     }
 }
