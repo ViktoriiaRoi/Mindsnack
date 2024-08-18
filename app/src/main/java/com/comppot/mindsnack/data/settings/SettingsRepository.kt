@@ -1,6 +1,7 @@
 package com.comppot.mindsnack.data.settings
 
 import android.util.Log
+import com.comppot.mindsnack.model.UserPreferences
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -8,8 +9,13 @@ private const val TAG = "SettingsRepository"
 
 interface SettingsRepository {
     val savedArticleIds: Flow<List<Long>>
+    val userPreferences: Flow<UserPreferences>
+
     suspend fun saveArticle(id: Long)
     suspend fun removeArticle(id: Long)
+    suspend fun updateDarkTheme(darkTheme: Boolean)
+    suspend fun updateNotifications(notifications: Boolean)
+    suspend fun clear()
 }
 
 class SettingsRepositoryImpl @Inject constructor(
@@ -17,6 +23,8 @@ class SettingsRepositoryImpl @Inject constructor(
 ) : SettingsRepository {
 
     override val savedArticleIds: Flow<List<Long>> = settingsStorage.savedArticleIds
+
+    override val userPreferences: Flow<UserPreferences> = settingsStorage.userPreferences
 
     override suspend fun saveArticle(id: Long) {
         settingsStorage.saveArticle(id)
@@ -26,5 +34,18 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun removeArticle(id: Long) {
         settingsStorage.removeArticle(id)
         Log.d(TAG, "Article $id was removed")
+    }
+
+    override suspend fun updateDarkTheme(darkTheme: Boolean) {
+        settingsStorage.updateDarkTheme(darkTheme)
+    }
+
+    override suspend fun updateNotifications(notifications: Boolean) {
+        settingsStorage.updateNotifications(notifications)
+    }
+
+    override suspend fun clear() {
+        settingsStorage.clear()
+        Log.d(TAG, "Settings are cleared")
     }
 }

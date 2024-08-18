@@ -1,20 +1,38 @@
 package com.comppot.mindsnack.ui
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.comppot.mindsnack.ui.navigation.MainNavGraph
 import com.comppot.mindsnack.ui.navigation.Screen
-import com.comppot.mindsnack.ui.screens.login.AuthManager
 import com.comppot.mindsnack.ui.theme.MindSnackTheme
 
 @Composable
 fun MindSnackApp() {
-    MindSnackTheme {
-        val navController = rememberNavController()
+    val context = LocalContext.current
+    val navController = rememberNavController()
 
-        val isAuthorized = AuthManager.isAuthorized()
-        val startDestination = if (!isAuthorized) Screen.Login else Screen.Tab
-        MainNavGraph(navController, startDestination)
+    val viewModel: AppViewModel = hiltViewModel()
+    val state = viewModel.appState.collectAsState().value
+
+    state?.let {
+        MindSnackTheme(darkTheme = state.darkTheme) {
+            MainNavGraph(
+                navController = navController,
+                startDestination = viewModel.getStartDestination(),
+                onLogout = {
+                    viewModel.logout(context) {
+                        navController.navigateAndPop(Screen.Login.route)
+                    }
+                }
+            )
+        }
     }
+}
+
+private fun NavHostController.navigateAndPop(route: String) = navigate(route) {
+    popUpTo(0)
 }

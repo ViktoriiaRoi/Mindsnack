@@ -1,9 +1,11 @@
-package com.comppot.mindsnack.ui.screens.tab.profile
+package com.comppot.mindsnack.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.comppot.mindsnack.data.auth.AuthRepository
 import com.comppot.mindsnack.data.settings.SettingsRepository
+import com.comppot.mindsnack.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -12,28 +14,28 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
+class AppViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val profileState = settingsRepository.userPreferences.map { preferences ->
-        ProfileState(
-            user = authRepository.getUser(),
-            preferences = preferences
-        )
+    val appState = settingsRepository.userPreferences.map { preferences ->
+        AppState(preferences.darkTheme)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = ProfileState()
+        initialValue = null
     )
 
+    fun getStartDestination(): Screen =
+        if (authRepository.isAuthorized()) Screen.Tab else Screen.Login
 
-    fun updateDarkTheme(value: Boolean) = viewModelScope.launch {
-        settingsRepository.updateDarkTheme(value)
-    }
-
-    fun updateNotifications(value: Boolean) = viewModelScope.launch {
-        settingsRepository.updateNotifications(value)
+    fun logout(context: Context, onComplete: () -> Unit) {
+        authRepository.logout(context) {
+            viewModelScope.launch {
+                settingsRepository.clear()
+                onComplete()
+            }
+        }
     }
 }

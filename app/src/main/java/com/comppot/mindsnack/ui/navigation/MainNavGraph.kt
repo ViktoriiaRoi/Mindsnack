@@ -18,7 +18,7 @@ import com.comppot.mindsnack.ui.screens.tab.BaseTabScreen
 const val ARTICLE_ID = "articleId"
 
 @Composable
-fun MainNavGraph(navController: NavHostController, startDestination: Screen) {
+fun MainNavGraph(navController: NavHostController, startDestination: Screen, onLogout: () -> Unit) {
     NavHost(
         navController = navController,
         startDestination = startDestination.route,
@@ -27,7 +27,7 @@ fun MainNavGraph(navController: NavHostController, startDestination: Screen) {
             .background(MaterialTheme.colorScheme.background)
     ) {
         composable(route = Screen.Login.route) { LoginScreen(navController) }
-        composable(route = Screen.Tab.route) { BaseTabScreen(navController) }
+        composable(route = Screen.Tab.route) { BaseTabScreen(navController, onLogout) }
         composable(
             route = Screen.Article.route + "/{$ARTICLE_ID}",
             arguments = listOf(navArgument(ARTICLE_ID) { type = NavType.LongType })

@@ -12,7 +12,7 @@ import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    FirebaseLoginUI(AuthManager.getSignInIntent()) { result ->
+    FirebaseLoginUI(LoginHelper.getSignInIntent()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             navController.navigate(Screen.Tab.route) {
                 popUpTo(Screen.Login.route) { inclusive = true }

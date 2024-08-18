@@ -24,34 +24,36 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.comppot.mindsnack.R
 import com.comppot.mindsnack.model.User
+import com.comppot.mindsnack.model.UserPreferences
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel = viewModel()) {
-    val user by viewModel.currentUser.collectAsState()
-    var showDialog by remember { mutableStateOf(false) }
+fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
+    val state = viewModel.profileState.collectAsState().value
 
     Column(
         modifier = Modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(40.dp)
     ) {
-        UserImage(imageUrl = user.image)
-        SettingsCard(user = user, onEditName = { showDialog = true })
+        UserImage(imageUrl = state.user.image)
+        SettingsCard(
+            user = state.user,
+            preferences = state.preferences,
+            onDarkThemeToggle = { viewModel.updateDarkTheme(it) },
+            onNotificationsToggle = { viewModel.updateNotifications(it) }
+        )
     }
 
     /*
@@ -69,11 +71,11 @@ private fun UserImage(imageUrl: String) {
     Box {
         AsyncImage(
             imageUrl,
+            error = painterResource(id = R.drawable.profile_placeholder),
             contentDescription = null,
             modifier = Modifier
                 .size(100.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.outlineVariant),
+                .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
         /*EditIconButton(
@@ -102,21 +104,26 @@ private fun EditIconButton(modifier: Modifier = Modifier, onClick: () -> Unit = 
 }
 
 @Composable
-private fun SettingsCard(user: User, onEditName: () -> Unit) {
+private fun SettingsCard(
+    user: User,
+    preferences: UserPreferences,
+    onDarkThemeToggle: (Boolean) -> Unit = {},
+    onNotificationsToggle: (Boolean) -> Unit = {},
+) {
     Card(
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         SettingsRow(stringResource(id = R.string.profile_settings_full_name)) {
-            SettingsText(user.fullName, onClick = onEditName)
+            SettingsText(user.fullName)
         }
         CardDivider()
         SettingsRow(stringResource(id = R.string.profile_settings_dark_theme)) {
-            SettingsSwitch(user.preferences.darkTheme)
+            Switch(preferences.darkTheme, onCheckedChange = onDarkThemeToggle)
         }
         CardDivider()
         SettingsRow(stringResource(id = R.string.profile_settings_notifications)) {
-            SettingsSwitch(user.preferences.notifications)
+            Switch(preferences.notifications, onCheckedChange = onNotificationsToggle)
         }
     }
 }
@@ -148,12 +155,6 @@ private fun SettingsText(text: String, onClick: () -> Unit = {}) {
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.clickable { onClick() },
     )
-}
-
-@Composable
-private fun SettingsSwitch(initialValue: Boolean) {
-    var checked by remember { mutableStateOf(initialValue) }
-    Switch(checked = checked, onCheckedChange = { checked = it })
 }
 
 @Composable
