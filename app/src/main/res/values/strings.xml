@@ -28,6 +28,8 @@
     <string name="profile_settings_dark_theme">Dark Theme</string>
     <string name="profile_settings_notifications">Notifications</string>
 
+    <string name="notification_screen_no_notifications">No notifications</string>
+
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_save">Save</string>
     <string name="dialog_edit_name_title">Edit your name</string>

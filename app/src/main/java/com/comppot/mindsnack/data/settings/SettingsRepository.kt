@@ -10,11 +10,13 @@ private const val TAG = "SettingsRepository"
 interface SettingsRepository {
     val savedArticleIds: Flow<List<Long>>
     val userPreferences: Flow<UserPreferences>
+    val loginTimestamp: Flow<Long>
 
     suspend fun saveArticle(id: Long)
     suspend fun removeArticle(id: Long)
     suspend fun updateDarkTheme(darkTheme: Boolean)
     suspend fun updateNotifications(notifications: Boolean)
+    suspend fun setLoginTimeToNow()
     suspend fun clear()
 }
 
@@ -23,8 +25,8 @@ class SettingsRepositoryImpl @Inject constructor(
 ) : SettingsRepository {
 
     override val savedArticleIds: Flow<List<Long>> = settingsStorage.savedArticleIds
-
     override val userPreferences: Flow<UserPreferences> = settingsStorage.userPreferences
+    override val loginTimestamp: Flow<Long> = settingsStorage.loginTimestamp
 
     override suspend fun saveArticle(id: Long) {
         settingsStorage.saveArticle(id)
@@ -42,6 +44,11 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun updateNotifications(notifications: Boolean) {
         settingsStorage.updateNotifications(notifications)
+    }
+
+    override suspend fun setLoginTimeToNow() {
+        val now = System.currentTimeMillis() / 1000
+        settingsStorage.updateLoginTimestamp(now)
     }
 
     override suspend fun clear() {

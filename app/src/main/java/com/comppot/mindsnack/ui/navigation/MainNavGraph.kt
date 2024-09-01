@@ -36,6 +36,6 @@ fun MainNavGraph(navController: NavHostController, startDestination: Screen, onL
             val articleId = arguments.getLong(ARTICLE_ID)
             ArticleScreen(articleId) { navController.navigateUp() }
         }
-        composable(route = Screen.Notifications.route) { NotificationsScreen { navController.navigateUp() } }
+        composable(route = Screen.Notifications.route) { NotificationsScreen(navController::navigateUp) }
     }
 }

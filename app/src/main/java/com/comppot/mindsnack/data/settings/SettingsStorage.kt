@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.comppot.mindsnack.model.UserPreferences
 import com.google.gson.Gson
@@ -15,11 +16,13 @@ import javax.inject.Inject
 interface SettingsStorage {
     val savedArticleIds: Flow<List<Long>>
     val userPreferences: Flow<UserPreferences>
+    val loginTimestamp: Flow<Long>
 
     suspend fun saveArticle(id: Long)
     suspend fun removeArticle(id: Long)
     suspend fun updateDarkTheme(darkTheme: Boolean)
     suspend fun updateNotifications(notifications: Boolean)
+    suspend fun updateLoginTimestamp(timestamp: Long)
     suspend fun clear()
 }
 
@@ -34,6 +37,10 @@ class SettingsStorageImpl @Inject constructor(
 
     override val userPreferences: Flow<UserPreferences> = dataStore.data.map { preferences ->
         preferences.getUserPreferences()
+    }
+
+    override val loginTimestamp: Flow<Long> = dataStore.data.map { preferences ->
+        preferences[LOGIN_TIMESTAMP] ?: System.currentTimeMillis()
     }
 
     override suspend fun saveArticle(id: Long) {
@@ -66,6 +73,12 @@ class SettingsStorageImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateLoginTimestamp(timestamp: Long) {
+        dataStore.edit { preferences ->
+            preferences[LOGIN_TIMESTAMP] = timestamp
+        }
+    }
+
     override suspend fun clear() {
         dataStore.edit { preferences ->
             preferences.clear()
@@ -88,5 +101,6 @@ class SettingsStorageImpl @Inject constructor(
         private val SAVED_ARTICLE_IDS = stringPreferencesKey("saved_article_ids")
         private val PREFERENCE_DARK_THEME = booleanPreferencesKey("preference_dark_theme")
         private val PREFERENCE_NOTIFICATIONS = booleanPreferencesKey("preference_notifications")
+        private val LOGIN_TIMESTAMP = longPreferencesKey("login_timestamp")
     }
 }

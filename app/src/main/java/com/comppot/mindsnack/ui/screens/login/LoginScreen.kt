@@ -5,15 +5,17 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.comppot.mindsnack.ui.navigation.Screen
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    FirebaseLoginUI(LoginHelper.getSignInIntent()) { result ->
+fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltViewModel()) {
+    FirebaseLoginUI(viewModel.getSignInIntent()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
+            viewModel.onLoginSuccess()
             navController.navigate(Screen.Tab.route) {
                 popUpTo(Screen.Login.route) { inclusive = true }
             }
