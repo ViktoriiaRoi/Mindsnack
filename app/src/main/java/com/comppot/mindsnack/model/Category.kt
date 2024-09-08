@@ -5,6 +5,6 @@ data class Category(
     val name: String
 ) {
     companion object {
-        val ALL = Category(0, "All")
+        val ALL = Category(0, "Усі")
     }
 }
