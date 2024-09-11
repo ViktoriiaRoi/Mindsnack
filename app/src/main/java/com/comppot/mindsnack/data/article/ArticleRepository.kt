@@ -1,9 +1,13 @@
 package com.comppot.mindsnack.data.article
 
+import android.content.Context
 import com.comppot.mindsnack.model.Article
 import com.comppot.mindsnack.model.ArticleDetails
-import com.comppot.mindsnack.model.CardInfo
 import com.comppot.mindsnack.model.Category
+import com.comppot.mindsnack.data.utils.AssetUtils
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import javax.inject.Inject
 
 interface ArticleRepository {
     fun getAllArticles(): List<Article>
@@ -11,40 +15,42 @@ interface ArticleRepository {
     fun getCategories(): List<Category>
 }
 
-class ArticleRepositoryImpl : ArticleRepository {
-    override fun getAllArticles() = List(7) { index ->
-        Article(
-            index.toLong(),
-            "https://static.remove.bg/sample-gallery/graphics/bird-thumbnail.jpg",
-            "How to make beautiful design using physics",
-            1716226826,
-            5,
-            1
-        )
+class ArticleRepositoryImpl @Inject constructor(
+    private val context: Context,
+    private val gson: Gson
+) : ArticleRepository {
+
+    private val articles: List<ArticleDetails> by lazy {
+        loadArticles()
     }
 
-    override fun getArticleById(id: Long) = ArticleDetails(
-        id,
-        "https://static.remove.bg/sample-gallery/graphics/bird-thumbnail.jpg",
-        "How to make beautiful design using physics",
-        1716226826,
-        5,
-        7,
-        0,
-        List(7) { index ->
-            CardInfo(
-                index.toLong(),
-                "Newton's second law",
-                "The acceleration that a body acquires due to the action of a force is directly proportional to this force and inversely proportional to the mass of the body.\n\nThe object referred to in Newton's second law is a material point that has an inherent property of inertia, the magnitude of which is characterized by mass."
+    override fun getAllArticles(): List<Article> {
+        return articles.map {
+            Article(
+                id = it.id,
+                image = it.image,
+                title = it.title,
+                postDate = it.postDate,
+                numberOfCards = it.numberOfCards,
+                categoryId = it.categoryId
             )
         }
-    )
+    }
 
-    override fun getCategories() = listOf(
-        Category(1, "Science"),
-        Category(2, "Psychology"),
-        Category(3, "Music"),
-        Category(4, "Space"),
-        Category(5, "Movies")
-    )
+    override fun getArticleById(id: Long): ArticleDetails {
+        return articles.firstOrNull { it.id == id }
+            ?: throw IllegalArgumentException("Article with id $id not found")
+    }
+
+    override fun getCategories(): List<Category> {
+        val json = AssetUtils.readAssetFile(context, AssetUtils.CATEGORIES_FILE)
+        val categoryListType = object : TypeToken<List<Category>>() {}.type
+        return gson.fromJson(json, categoryListType)
+    }
+
+    private fun loadArticles(): List<ArticleDetails> {
+        val json = AssetUtils.readAssetFile(context, AssetUtils.ARTICLES_FILE)
+        val articleListType = object : TypeToken<List<ArticleDetails>>() {}.type
+        return gson.fromJson(json, articleListType)
+    }
 }

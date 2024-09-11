@@ -25,6 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -91,19 +94,25 @@ fun ArticleBottomBar(
     isSaved: Boolean,
     savedCount: Int,
     onSavedClick: (Boolean) -> Unit = {},
+    onShareClick: () -> Unit = {},
     navigateUp: () -> Unit = {}
 ) {
+    var isLoading by remember { mutableStateOf(false) }
+
     NavigationBar(tonalElevation = 0.dp) {
-        BottomToolbarItem(onClick = navigateUp) {
+        BottomToolbarItem(enabled = !isLoading, onClick = {
+            isLoading = true
+            navigateUp()
+        }) {
             Icon(
                 Icons.AutoMirrored.Default.ArrowBack,
                 contentDescription = stringResource(id = R.string.icon_back)
             )
         }
-        BottomToolbarItem(onClick = { onSavedClick(!isSaved) }) {
+        BottomToolbarItem(enabled = !isLoading, onClick = { onSavedClick(!isSaved) }) {
             SaveArticleIcon(isSaved, savedCount)
         }
-        BottomToolbarItem {
+        BottomToolbarItem(enabled = !isLoading, onClick = onShareClick) {
             Icon(
                 Icons.Outlined.Share,
                 contentDescription = stringResource(id = R.string.icon_share),
@@ -129,11 +138,13 @@ private fun SaveArticleIcon(isSaved: Boolean, savedCount: Int) {
 @Composable
 private fun RowScope.BottomToolbarItem(
     onClick: () -> Unit = {},
+    enabled: Boolean = true,
     content: @Composable () -> Unit
 ) {
     NavigationBarItem(
         selected = false,
         onClick = onClick,
+        enabled = enabled,
         icon = content
     )
 }

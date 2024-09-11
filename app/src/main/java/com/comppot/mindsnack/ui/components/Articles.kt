@@ -50,7 +50,7 @@ fun ArticleCard(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 PreviewTitleText(article.title, MaterialTheme.typography.titleMedium)
-                DetailsText(article.postDate, article.readTime, MaterialTheme.typography.bodySmall)
+                DetailsText(article.postDate, article.numberOfCards, MaterialTheme.typography.bodySmall)
             }
             ArticleImage(
                 imageUrl = article.image,
@@ -107,7 +107,7 @@ fun ArticleDetailsHeader(articleDetails: ArticleDetails, modifier: Modifier = Mo
             )
             DetailsText(
                 articleDetails.postDate,
-                articleDetails.readTime,
+                articleDetails.numberOfCards,
                 MaterialTheme.typography.bodyMedium
             )
         }
@@ -133,12 +133,12 @@ private fun PreviewTitleText(title: String, style: TextStyle, modifier: Modifier
 }
 
 @Composable
-private fun DetailsText(postDate: Long, readTime: Int, style: TextStyle) {
+private fun DetailsText(postDate: Long, cards: Int, style: TextStyle) {
     Text(
         stringResource(
             id = R.string.article_card_info,
             DateUtils.formatDate(postDate),
-            readTime
+            cards
         ),
         style = style,
         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -172,7 +172,7 @@ private fun SavedArticleCardPreview() {
 @Preview
 @Composable
 private fun ArticleDetailsHeaderPreview() {
-    val article = ArticleDetails(1, "", "How to make beautiful design using physics", 1716226826, 5)
+    val article = ArticleDetails(1, "", "How to make beautiful design using physics", 1716226826, 5, 1)
     ArticleDetailsHeader(
         article,
         modifier = Modifier

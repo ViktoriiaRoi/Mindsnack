@@ -15,7 +15,7 @@
     <string name="icon_more">Більше</string>
     <string name="menu_item_logout">Вийти</string>
 
-    <string name="article_card_info">%1$s - %2$d хв читання</string>
+    <string name="article_card_info">%1$s - %2$d карток</string>
 
     <string name="home_screen_no_articles">Немає статей</string>
 
@@ -35,4 +35,6 @@
     <string name="dialog_edit_name_title">Редагувати ім\'я</string>
     <string name="dialog_edit_name_first">Ім\'я</string>
     <string name="dialog_edit_name_last">Прізвище</string>
+
+    <string name="snackbar_not_implemented">Ця функція поки не працює :(</string>
 </resources>

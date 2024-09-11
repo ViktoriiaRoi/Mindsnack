@@ -1,5 +1,6 @@
 package com.comppot.mindsnack.di
 
+import android.content.Context
 import com.comppot.mindsnack.data.article.ArticleRepository
 import com.comppot.mindsnack.data.article.ArticleRepositoryImpl
 import com.comppot.mindsnack.data.auth.AuthRepository
@@ -7,9 +8,11 @@ import com.comppot.mindsnack.data.auth.AuthRepositoryImpl
 import com.comppot.mindsnack.data.settings.SettingsRepository
 import com.comppot.mindsnack.data.settings.SettingsRepositoryImpl
 import com.comppot.mindsnack.data.settings.SettingsStorage
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -19,8 +22,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideArticleRepository(): ArticleRepository {
-        return ArticleRepositoryImpl()
+    fun provideArticleRepository(@ApplicationContext context: Context, gson: Gson): ArticleRepository {
+        return ArticleRepositoryImpl(context, gson)
     }
 
     @Provides

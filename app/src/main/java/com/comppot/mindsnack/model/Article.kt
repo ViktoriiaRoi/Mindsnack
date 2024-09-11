@@ -5,6 +5,6 @@ data class Article(
     val image: String,
     val title: String,
     val postDate: Long,
-    val readTime: Int,
+    val numberOfCards: Int,
     val categoryId: Int
 )
