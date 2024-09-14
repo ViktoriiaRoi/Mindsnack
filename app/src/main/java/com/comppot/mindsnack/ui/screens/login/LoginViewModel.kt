@@ -1,16 +1,20 @@
 package com.comppot.mindsnack.ui.screens.login
 
-import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.comppot.mindsnack.data.settings.SettingsRepository
 import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-object AuthManager {
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val settingsRepository: SettingsRepository
+) : ViewModel() {
+
     private val authUI: AuthUI = AuthUI.getInstance()
-
-    fun isAuthorized() = firebaseAuth.currentUser != null
 
     fun getSignInIntent(): Intent {
         val providers = arrayListOf(
@@ -22,10 +26,7 @@ object AuthManager {
             .build()
     }
 
-    fun onSignedOut(context: Context, onComplete: () -> Unit) {
-        authUI.signOut(context)
-            .addOnCompleteListener {
-                onComplete()
-            }
+    fun onLoginSuccess() = viewModelScope.launch {
+        settingsRepository.setLoginTimeToNow()
     }
 }

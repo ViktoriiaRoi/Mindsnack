@@ -1,21 +1,39 @@
 package com.comppot.mindsnack.ui.screens.tab.profile
 
 import androidx.lifecycle.ViewModel
-import com.comppot.mindsnack.model.User
-import com.comppot.mindsnack.model.toUser
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import androidx.lifecycle.viewModelScope
+import com.comppot.mindsnack.data.auth.AuthRepository
+import com.comppot.mindsnack.data.settings.SettingsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProfileViewModel : ViewModel() {
-    private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val settingsRepository: SettingsRepository
+) : ViewModel() {
 
-    private val _currentUser = MutableStateFlow(User())
-    val currentUser = _currentUser.asStateFlow()
+    val profileState = settingsRepository.userPreferences.map { preferences ->
+        ProfileState(
+            user = authRepository.getUser(),
+            preferences = preferences
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ProfileState()
+    )
 
-    init {
-        firebaseAuth.currentUser?.let {
-            _currentUser.value = it.toUser()
-        }
+
+    fun updateDarkTheme(value: Boolean) = viewModelScope.launch {
+        settingsRepository.updateDarkTheme(value)
+    }
+
+    fun updateNotifications(value: Boolean) = viewModelScope.launch {
+        settingsRepository.updateNotifications(value)
     }
 }

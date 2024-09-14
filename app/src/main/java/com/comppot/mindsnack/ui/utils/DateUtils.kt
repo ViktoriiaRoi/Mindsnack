@@ -7,10 +7,10 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 object DateUtils {
-    private const val DATE_FORMAT = "MMM d"
+    private const val DATE_FORMAT = "d MMMM"
 
     fun formatDate(timestamp: Long): String {
-        val formatter = SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH)
+        val formatter = SimpleDateFormat(DATE_FORMAT, Locale.forLanguageTag("uk"))
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = timestamp * 1000
         return formatter.format(calendar.time)
@@ -23,11 +23,11 @@ object DateUtils {
         val duration = diffInSeconds.toDuration(DurationUnit.SECONDS)
 
         return when {
-            duration.inWholeSeconds < 60 -> "${duration.inWholeSeconds}s"
-            duration.inWholeMinutes < 60 -> "${duration.inWholeMinutes}m"
-            duration.inWholeHours < 24 -> "${duration.inWholeHours}h"
-            duration.inWholeDays < 7 -> "${duration.inWholeDays}d"
-            else -> "${duration.inWholeDays / 7}w"
+            duration.inWholeSeconds < 60 -> "${duration.inWholeSeconds} с"
+            duration.inWholeMinutes < 60 -> "${duration.inWholeMinutes} хв"
+            duration.inWholeHours < 24 -> "${duration.inWholeHours} год"
+            duration.inWholeDays < 7 -> "${duration.inWholeDays} д"
+            else -> "${duration.inWholeDays / 7} тиж"
         }
     }
 }

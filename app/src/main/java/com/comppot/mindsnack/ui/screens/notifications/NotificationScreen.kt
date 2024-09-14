@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -15,35 +18,47 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.comppot.mindsnack.R
 import com.comppot.mindsnack.model.Notification
+import com.comppot.mindsnack.ui.components.FullScreenLoading
 import com.comppot.mindsnack.ui.components.TopBarBackButton
 import com.comppot.mindsnack.ui.utils.DateUtils
 import com.comppot.mindsnack.ui.utils.takeColorIf
 
 @Composable
-fun NotificationsScreen(navigateUp: () -> Unit = {}) {
+fun NotificationsScreen(
+    navigateUp: () -> Unit = {},
+    viewModel: NotificationViewModel = hiltViewModel()
+) {
     val screenTitle = stringResource(id = R.string.screen_notifications)
-    val notificationList = List(7) { index -> exampleNotification(index, index > 2) }
+    val state = viewModel.notificationState.collectAsState().value
 
     Scaffold(
         topBar = { TopBarBackButton(screenTitle, navigateUp) },
         containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
-        NotificationList(notificationList, modifier = Modifier.padding(innerPadding))
+        Box(modifier = Modifier.padding(innerPadding)) {
+            when {
+                state.isLoading -> FullScreenLoading()
+                state.notifications.isEmpty() -> NoNotifications()
+                else -> NotificationList(state.notifications)
+            }
+        }
     }
 }
 
 @Composable
-private fun NotificationList(notificationList: List<Notification>, modifier: Modifier = Modifier) {
-    LazyColumn(modifier = modifier) {
-        items(notificationList) {
+private fun NotificationList(notifications: List<Notification>) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(notifications) {
             NotificationItem(
                 it, modifier = Modifier
                     .fillMaxWidth()
@@ -68,16 +83,18 @@ private fun NotificationItem(notification: Notification, modifier: Modifier = Mo
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        /*
         Box(
             modifier = Modifier
                 .size(6.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primary.takeColorIf(!notification.wasRead))
-        )
-        Column(modifier = Modifier.weight(1f)) {
+        )*/
+        Spacer(modifier = Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
                 notification.title,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
@@ -94,16 +111,19 @@ private fun NotificationItem(notification: Notification, modifier: Modifier = Mo
     }
 }
 
+@Composable
+fun NoNotifications() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            stringResource(id = R.string.notification_screen_no_notifications),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun NotificationScreenPreview() {
     NotificationsScreen()
 }
-
-private fun exampleNotification(id: Int, wasRead: Boolean) = Notification(
-    id.toLong(),
-    "New Article",
-    "Read how to make beautiful design using physics written by Isaak Newton",
-    1720184324,
-    wasRead
-)

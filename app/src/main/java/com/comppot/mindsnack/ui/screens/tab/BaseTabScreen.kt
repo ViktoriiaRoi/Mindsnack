@@ -6,7 +6,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -14,11 +13,9 @@ import com.comppot.mindsnack.ui.components.TabBottomBar
 import com.comppot.mindsnack.ui.components.TabTopBar
 import com.comppot.mindsnack.ui.navigation.Screen
 import com.comppot.mindsnack.ui.navigation.TabNavGraph
-import com.comppot.mindsnack.ui.screens.login.AuthManager
 
 @Composable
-fun BaseTabScreen(navController: NavHostController) {
-    val context = LocalContext.current
+fun BaseTabScreen(navController: NavHostController, onLogout: () -> Unit) {
     val bottomNavController = rememberNavController()
 
     Scaffold(
@@ -26,11 +23,8 @@ fun BaseTabScreen(navController: NavHostController) {
             TabTopBar(
                 bottomNavController,
                 navigateTo = { navController.navigate(it.route) },
-                logout = {
-                    AuthManager.onSignedOut(context) {
-                        navController.navigateAndPop(Screen.Login.route)
-                    }
-                })
+                logout = onLogout
+            )
         },
         bottomBar = { TabBottomBar(bottomNavController) },
         containerColor = MaterialTheme.colorScheme.surfaceContainer
@@ -44,8 +38,4 @@ fun BaseTabScreen(navController: NavHostController) {
                 .padding(bottom = 2.dp)
         )
     }
-}
-
-private fun NavHostController.navigateAndPop(route: String) = navigate(route) {
-    popUpTo(0)
 }
