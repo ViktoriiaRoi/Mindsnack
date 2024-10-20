@@ -29,8 +29,8 @@ class ProfileViewModel @Inject constructor(
     )
 
 
-    fun updateDarkTheme(value: Boolean) = viewModelScope.launch {
-        settingsRepository.updateDarkTheme(value)
+    fun updateThemeMode(value: Int) = viewModelScope.launch {
+        settingsRepository.updateThemeMode(value)
     }
 
     fun updateNotifications(value: Boolean) = viewModelScope.launch {

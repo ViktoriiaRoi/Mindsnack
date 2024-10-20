@@ -4,8 +4,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.comppot.mindsnack.model.ThemeMode
 import com.comppot.mindsnack.model.UserPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -20,7 +22,7 @@ interface SettingsStorage {
 
     suspend fun saveArticle(id: Long)
     suspend fun removeArticle(id: Long)
-    suspend fun updateDarkTheme(darkTheme: Boolean)
+    suspend fun updateThemeMode(themeMode: Int)
     suspend fun updateNotifications(notifications: Boolean)
     suspend fun updateLoginTimestamp(timestamp: Long)
     suspend fun clear()
@@ -61,9 +63,9 @@ class SettingsStorageImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateDarkTheme(darkTheme: Boolean) {
+    override suspend fun updateThemeMode(themeMode: Int) {
         dataStore.edit { preferences ->
-            preferences[PREFERENCE_DARK_THEME] = darkTheme
+            preferences[PREFERENCE_THEME_MODE] = themeMode
         }
     }
 
@@ -92,14 +94,14 @@ class SettingsStorageImpl @Inject constructor(
     }
 
     private fun Preferences.getUserPreferences(): UserPreferences {
-        val darkTheme = this[PREFERENCE_DARK_THEME] ?: false
+        val themeMode = ThemeMode.fromId(this[PREFERENCE_THEME_MODE])
         val notifications = this[PREFERENCE_NOTIFICATIONS] ?: true
-        return UserPreferences(darkTheme, notifications)
+        return UserPreferences(themeMode, notifications)
     }
 
     companion object {
         private val SAVED_ARTICLE_IDS = stringPreferencesKey("saved_article_ids")
-        private val PREFERENCE_DARK_THEME = booleanPreferencesKey("preference_dark_theme")
+        private val PREFERENCE_THEME_MODE = intPreferencesKey("preference_theme_mode")
         private val PREFERENCE_NOTIFICATIONS = booleanPreferencesKey("preference_notifications")
         private val LOGIN_TIMESTAMP = longPreferencesKey("login_timestamp")
     }

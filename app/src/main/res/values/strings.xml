@@ -29,7 +29,7 @@
     <string name="saved_screen_no_articles">Ще немає збережених статей</string>
 
     <string name="profile_settings_full_name">Ваше ім\'я</string>
-    <string name="profile_settings_dark_theme">Темний режим</string>
+    <string name="profile_settings_theme_mode">Тема</string>
     <string name="profile_settings_notifications">Сповіщення</string>
 
     <string name="notification_screen_no_notifications">Немає сповіщень</string>
@@ -42,6 +42,10 @@
     <string name="dialog_suggest_book_title">Запропонувати книгу</string>
     <string name="dialog_suggest_book_title_of_book">Назва книги</string>
     <string name="dialog__suggest_book_author">Автор</string>
+    <string name="dialog_theme_mode_title">Вибрати тему</string>
+    <string name="dialog_theme_mode_auto">Системна</string>
+    <string name="dialog_theme_mode_light">Світлa</string>
+    <string name="dialog_theme_mode_dark">Темнa</string>
 
     <string name="snackbar_not_implemented">Ця функція поки не працює :(</string>
 </resources>
