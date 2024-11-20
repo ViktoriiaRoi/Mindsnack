@@ -55,7 +55,7 @@ fun TabBottomBar(bottomNavController: NavHostController) {
         NavigationItem(Screen.Tab.Profile, R.string.screen_profile, Icons.Filled.Person, Icons.Outlined.Person)
     )
 
-    NavigationBar(tonalElevation = 0.dp) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
         val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
@@ -99,7 +99,7 @@ fun ArticleBottomBar(
 ) {
     var isLoading by remember { mutableStateOf(false) }
 
-    NavigationBar(tonalElevation = 0.dp) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
         BottomToolbarItem(enabled = !isLoading, onClick = {
             isLoading = true
             navigateUp()
