@@ -1,6 +1,5 @@
 package com.comppot.mindsnack.ui.screens.article
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,18 +17,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,8 +34,10 @@ import com.comppot.mindsnack.model.ArticleDetails
 import com.comppot.mindsnack.model.CardInfo
 import com.comppot.mindsnack.ui.components.ArticleBottomBar
 import com.comppot.mindsnack.ui.components.ArticleDetailsHeader
+import com.comppot.mindsnack.ui.components.CustomSnackBar
 import com.comppot.mindsnack.ui.components.FullScreenLoading
 import com.comppot.mindsnack.ui.theme.MindSnackTheme
+import com.comppot.mindsnack.ui.utils.SnackbarController
 import kotlinx.coroutines.launch
 
 @Composable
@@ -49,14 +46,11 @@ fun ArticleScreen(
     viewModel: ArticleViewModel = hiltViewModel(),
     navigateUp: () -> Unit = {},
 ) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     val showNotImplemented: () -> Unit = {
         coroutineScope.launch {
-            val message = context.getString(R.string.snackbar_not_implemented)
-            snackbarHostState.showSnackbar(message)
+            SnackbarController.showMessage(R.string.snackbar_not_implemented)
         }
     }
 
@@ -76,7 +70,7 @@ fun ArticleScreen(
             )
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { CustomSnackBar() }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when {
@@ -87,7 +81,6 @@ fun ArticleScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ArticleDetailsList(articleDetails: ArticleDetails) {
     val lazyListState = rememberLazyListState()
