@@ -1,5 +1,6 @@
 package com.comppot.mindsnack.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -99,11 +100,14 @@ fun ArticleBottomBar(
 ) {
     var isLoading by remember { mutableStateOf(false) }
 
+    val onBackPress = {
+        isLoading = true
+        navigateUp()
+    }
+
+    BackHandler(onBack = onBackPress)
     NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-        BottomToolbarItem(enabled = !isLoading, onClick = {
-            isLoading = true
-            navigateUp()
-        }) {
+        BottomToolbarItem(enabled = !isLoading, onClick = onBackPress) {
             Icon(
                 Icons.AutoMirrored.Default.ArrowBack,
                 contentDescription = stringResource(id = R.string.icon_back)

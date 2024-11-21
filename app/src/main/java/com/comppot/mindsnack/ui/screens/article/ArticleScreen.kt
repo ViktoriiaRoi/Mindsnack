@@ -34,7 +34,6 @@ import com.comppot.mindsnack.ui.components.ArticleBottomBar
 import com.comppot.mindsnack.ui.components.ArticleDetailsHeader
 import com.comppot.mindsnack.ui.components.CustomSnackBar
 import com.comppot.mindsnack.ui.components.FullScreenLoading
-import com.comppot.mindsnack.ui.components.RatingCard
 import com.comppot.mindsnack.ui.theme.MindSnackTheme
 import com.comppot.mindsnack.ui.utils.applyFocusAlpha
 

@@ -32,7 +32,7 @@ import com.comppot.mindsnack.model.ArticleDetails
 import com.comppot.mindsnack.ui.utils.DateUtils
 
 @Composable
-fun ArticleCard(
+fun ArticleItem(
     article: Article,
     modifier: Modifier = Modifier,
     openArticle: (Long) -> Unit = {}
@@ -63,7 +63,7 @@ fun ArticleCard(
 }
 
 @Composable
-fun SavedArticleCard(
+fun SavedArticleItem(
     article: Article,
     modifier: Modifier = Modifier,
     openArticle: (Long) -> Unit = {}
@@ -157,16 +157,16 @@ private fun ArticleImage(imageUrl: String, modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-private fun ArticleCardPreview() {
+private fun ArticleItemPreview() {
     val article = Article(1, "", "How to make beautiful design using physics", 1716226826, 5, 1)
-    ArticleCard(article, modifier = Modifier.fillMaxWidth())
+    ArticleItem(article, modifier = Modifier.fillMaxWidth())
 }
 
 @Preview
 @Composable
-private fun SavedArticleCardPreview() {
+private fun SavedArticleItemPreview() {
     val article = Article(1, "", "How to make beautiful design using physics", 1716226826, 5, 1)
-    SavedArticleCard(article, modifier = Modifier.width(200.dp))
+    SavedArticleItem(article, modifier = Modifier.width(200.dp))
 }
 
 @Preview
