@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.comppot.mindsnack.R
 import com.comppot.mindsnack.model.Notification
+import com.comppot.mindsnack.ui.components.EmptyListMessage
 import com.comppot.mindsnack.ui.components.FullScreenLoading
 import com.comppot.mindsnack.ui.components.TopBarBackButton
 import com.comppot.mindsnack.ui.utils.DateUtils
@@ -48,7 +49,7 @@ fun NotificationsScreen(
         Box(modifier = Modifier.padding(innerPadding)) {
             when {
                 state.isLoading -> FullScreenLoading()
-                state.notifications.isEmpty() -> NoNotifications()
+                state.notifications.isEmpty() -> EmptyListMessage(stringResource(R.string.notification_screen_no_notifications))
                 else -> NotificationList(state.notifications)
             }
         }
@@ -107,17 +108,6 @@ private fun NotificationItem(notification: Notification, modifier: Modifier = Mo
             DateUtils.getTimeDifference(notification.sentDate),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Composable
-fun NoNotifications() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Text(
-            stringResource(id = R.string.notification_screen_no_notifications),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.align(Alignment.Center)
         )
     }
 }

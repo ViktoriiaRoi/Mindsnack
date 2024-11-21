@@ -1,6 +1,5 @@
 package com.comppot.mindsnack.ui.screens.tab.profile
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,10 +19,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,12 +35,19 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.comppot.mindsnack.R
+import com.comppot.mindsnack.model.ThemeMode
 import com.comppot.mindsnack.model.User
 import com.comppot.mindsnack.model.UserPreferences
+import com.comppot.mindsnack.ui.components.ThemeModeDialog
+
+enum class ProfileDialogType {
+    THEME_MODE
+}
 
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val state = viewModel.profileState.collectAsState().value
+    val dialogState = remember { mutableStateOf<ProfileDialogType?>(null) }
 
     Column(
         modifier = Modifier.padding(16.dp),
@@ -51,19 +58,19 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
         SettingsCard(
             user = state.user,
             preferences = state.preferences,
-            onDarkThemeToggle = { viewModel.updateDarkTheme(it) },
-            onNotificationsToggle = { viewModel.updateNotifications(it) }
+            showDialog = { dialogState.value = it }
         )
     }
 
-    /*
-    if (showDialog) {
-        EditNameDialog(
-            initialFirstName = user.firstName,
-            initialLastName = user.lastName,
-            onDismiss = { showDialog = false }
+    when (dialogState.value) {
+        ProfileDialogType.THEME_MODE -> ThemeModeDialog(
+            initialThemeId = state.preferences.themeMode.id,
+            onSave = { viewModel.updateThemeMode(it) },
+            onDismiss = { dialogState.value = null },
         )
-    }*/
+
+        else -> {}
+    }
 }
 
 @Composable
@@ -107,23 +114,21 @@ private fun EditIconButton(modifier: Modifier = Modifier, onClick: () -> Unit = 
 private fun SettingsCard(
     user: User,
     preferences: UserPreferences,
-    onDarkThemeToggle: (Boolean) -> Unit = {},
-    onNotificationsToggle: (Boolean) -> Unit = {},
+    showDialog: (ProfileDialogType) -> Unit
 ) {
     Card(
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         SettingsRow(stringResource(id = R.string.profile_settings_full_name)) {
-            SettingsText(user.fullName)
+            NameText(user.fullName)
         }
         CardDivider()
-        SettingsRow(stringResource(id = R.string.profile_settings_dark_theme)) {
-            Switch(preferences.darkTheme, onCheckedChange = onDarkThemeToggle)
-        }
-        CardDivider()
-        SettingsRow(stringResource(id = R.string.profile_settings_notifications)) {
-            Switch(preferences.notifications, onCheckedChange = onNotificationsToggle)
+        SettingsRow(stringResource(id = R.string.profile_settings_theme_mode)) {
+            ThemeText(
+                preferences.themeMode,
+                onClick = { showDialog(ProfileDialogType.THEME_MODE) }
+            )
         }
     }
 }
@@ -148,13 +153,33 @@ private fun SettingsRow(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun SettingsText(text: String, onClick: () -> Unit = {}) {
+private fun NameText(text: String, onClick: () -> Unit = {}) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.clickable { onClick() },
     )
+}
+
+@Composable
+private fun ThemeText(theme: ThemeMode, onClick: () -> Unit = {}) {
+    Row(
+        modifier = Modifier.clickable { onClick() },
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            theme.icon,
+            contentDescription = stringResource(id = theme.stringId),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = stringResource(id = theme.stringId),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
 }
 
 @Composable

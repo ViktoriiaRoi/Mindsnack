@@ -1,5 +1,6 @@
 package com.comppot.mindsnack.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -55,7 +56,7 @@ fun TabBottomBar(bottomNavController: NavHostController) {
         NavigationItem(Screen.Tab.Profile, R.string.screen_profile, Icons.Filled.Person, Icons.Outlined.Person)
     )
 
-    NavigationBar(tonalElevation = 0.dp) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
         val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
@@ -99,11 +100,14 @@ fun ArticleBottomBar(
 ) {
     var isLoading by remember { mutableStateOf(false) }
 
-    NavigationBar(tonalElevation = 0.dp) {
-        BottomToolbarItem(enabled = !isLoading, onClick = {
-            isLoading = true
-            navigateUp()
-        }) {
+    val onBackPress = {
+        isLoading = true
+        navigateUp()
+    }
+
+    BackHandler(onBack = onBackPress)
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+        BottomToolbarItem(enabled = !isLoading, onClick = onBackPress) {
             Icon(
                 Icons.AutoMirrored.Default.ArrowBack,
                 contentDescription = stringResource(id = R.string.icon_back)

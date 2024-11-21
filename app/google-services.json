@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "432884314904",
     "project_id": "mindsnack-4f28d",
-    "storage_bucket": "mindsnack-4f28d.appspot.com"
+    "storage_bucket": "mindsnack-4f28d.firebasestorage.app"
   },
   "client": [
     {
@@ -14,11 +14,27 @@
       },
       "oauth_client": [
         {
-          "client_id": "432884314904-bikm9bl2gkgjgt4af3mgm542gh8ubtnl.apps.googleusercontent.com",
+          "client_id": "432884314904-1nf7348fqkstbu64sog9u94vj5itbr5m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.comppot.mindsnack",
-            "certificate_hash": "9ecbe58c4eb18e6437c4a5287cbf3c56423b0186"
+            "certificate_hash": "016f4caf3a66968eaa64565772c4e6cf5b321071"
+          }
+        },
+        {
+          "client_id": "432884314904-jg1ba26uuoq27hnalk6nqp619r0o9890.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.comppot.mindsnack",
+            "certificate_hash": "dfc8dd83c9f48ad304728effbdb4069d278ce7e8"
+          }
+        },
+        {
+          "client_id": "432884314904-oq31kn4vh62reag5gsstju20j4ppaaji.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.comppot.mindsnack",
+            "certificate_hash": "7451928d2e100691eb583e5c31c13910935b069b"
           }
         },
         {

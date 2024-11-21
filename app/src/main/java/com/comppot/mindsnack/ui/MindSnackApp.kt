@@ -19,7 +19,7 @@ fun MindSnackApp() {
     val state = viewModel.appState.collectAsState().value
 
     state?.let {
-        MindSnackTheme(darkTheme = state.darkTheme) {
+        MindSnackTheme(darkTheme = state.themeMode.isDarkMode()) {
             MainNavGraph(
                 navController = navController,
                 startDestination = viewModel.getStartDestination(),

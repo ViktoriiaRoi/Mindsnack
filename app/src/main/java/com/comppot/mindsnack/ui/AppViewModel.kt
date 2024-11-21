@@ -20,7 +20,7 @@ class AppViewModel @Inject constructor(
 ) : ViewModel() {
 
     val appState = settingsRepository.userPreferences.map { preferences ->
-        AppState(preferences.darkTheme)
+        AppState(preferences.themeMode)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

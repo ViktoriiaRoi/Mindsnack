@@ -1,6 +1,7 @@
 package com.comppot.mindsnack.data.settings
 
 import android.util.Log
+import com.comppot.mindsnack.model.ThemeMode
 import com.comppot.mindsnack.model.UserPreferences
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -14,7 +15,7 @@ interface SettingsRepository {
 
     suspend fun saveArticle(id: Long)
     suspend fun removeArticle(id: Long)
-    suspend fun updateDarkTheme(darkTheme: Boolean)
+    suspend fun updateThemeMode(themeMode: Int)
     suspend fun updateNotifications(notifications: Boolean)
     suspend fun setLoginTimeToNow()
     suspend fun clear()
@@ -37,9 +38,8 @@ class SettingsRepositoryImpl @Inject constructor(
         settingsStorage.removeArticle(id)
         Log.d(TAG, "Article $id was removed")
     }
-
-    override suspend fun updateDarkTheme(darkTheme: Boolean) {
-        settingsStorage.updateDarkTheme(darkTheme)
+    override suspend fun updateThemeMode(themeMode: Int) {
+        settingsStorage.updateThemeMode(themeMode)
     }
 
     override suspend fun updateNotifications(notifications: Boolean) {
