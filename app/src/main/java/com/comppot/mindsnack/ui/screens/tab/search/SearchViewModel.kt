@@ -8,6 +8,7 @@ import com.comppot.mindsnack.ui.utils.SnackbarController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,23 +25,14 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun initState() = viewModelScope.launch {
-        _searchState.emit(
-            _searchState.value.copy(
-                isLoading = false,
-                articles = articleRepository.getAllArticles()
-            )
-        )
+        searchArticles("")
     }
 
     fun searchArticles(text: String) = viewModelScope.launch {
-        val articles = articleRepository.getAllArticles()
-        val filteredArticles = articles.filter { it.title.contains(text.trim(), ignoreCase = true) }
-
-        _searchState.emit(
-            _searchState.value.copy(
-                articles = filteredArticles
-            )
-        )
+        _searchState.update { it.copy(isLoading = true) }
+        articleRepository.searchArticles(text).onSuccess { articles ->
+            _searchState.update { it.copy(isLoading = false, articles = articles) }
+        }
     }
 
     fun suggestBook(title: String, author: String) = viewModelScope.launch {

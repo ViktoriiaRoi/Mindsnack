@@ -1,8 +1,10 @@
 package com.comppot.mindsnack.di
 
 import android.content.Context
+import com.comppot.mindsnack.data.api.MindSnackApi
 import com.comppot.mindsnack.data.article.ArticleRepository
 import com.comppot.mindsnack.data.article.ArticleRepositoryImpl
+import com.comppot.mindsnack.data.article.LocalArticleRepository
 import com.comppot.mindsnack.data.auth.AuthRepository
 import com.comppot.mindsnack.data.auth.AuthRepositoryImpl
 import com.comppot.mindsnack.data.settings.SettingsRepository
@@ -22,8 +24,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideArticleRepository(@ApplicationContext context: Context, gson: Gson): ArticleRepository {
-        return ArticleRepositoryImpl(context, gson)
+    fun provideArticleRepository(api: MindSnackApi): ArticleRepository {
+        return ArticleRepositoryImpl(api)
     }
 
     @Provides

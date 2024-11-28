@@ -27,14 +27,15 @@ class ArticleViewModel @Inject constructor(
     private val articleId: Long? get() = _articleState.value.articleDetails?.id
 
     fun fetchArticleDetails(id: Long) = viewModelScope.launch {
-        val articleDetails = articleRepository.getArticleById(id)
-        _articleState.emit(
-            ArticleState(
-                isLoading = false,
-                articleDetails = articleDetails,
-                isSaved = isArticleSaved(id)
+        articleRepository.getArticleDetails(id).onSuccess { articleDetails ->
+            _articleState.emit(
+                ArticleState(
+                    isLoading = false,
+                    articleDetails = articleDetails,
+                    isSaved = isArticleSaved(id)
+                )
             )
-        )
+        }
     }
 
     fun updateArticleSaved(isSaved: Boolean) = articleId?.let { id ->
@@ -44,9 +45,7 @@ class ArticleViewModel @Inject constructor(
             } else {
                 settingsRepository.removeArticle(id)
             }
-            _articleState.update { state ->
-                state.copy(isSaved = isSaved)
-            }
+            _articleState.update { it.copy(isSaved = isSaved) }
         }
     }
 
@@ -56,9 +55,7 @@ class ArticleViewModel @Inject constructor(
 
     fun saveRating(rating: Rating) = viewModelScope.launch {
         SnackbarController.showMessage(R.string.article_rating_success)
-        _articleState.update { state ->
-            state.copy(isRatingShown = false)
-        }
+        _articleState.update { it.copy(isRatingShown = false) }
     }
 
     private suspend fun isArticleSaved(id: Long): Boolean {
