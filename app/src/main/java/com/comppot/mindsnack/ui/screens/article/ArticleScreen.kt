@@ -2,7 +2,6 @@ package com.comppot.mindsnack.ui.screens.article
 
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,7 +32,7 @@ import com.comppot.mindsnack.model.Rating
 import com.comppot.mindsnack.ui.components.ArticleBottomBar
 import com.comppot.mindsnack.ui.components.ArticleDetailsHeader
 import com.comppot.mindsnack.ui.components.CustomSnackBar
-import com.comppot.mindsnack.ui.components.FullScreenLoading
+import com.comppot.mindsnack.ui.components.StatusHandler
 import com.comppot.mindsnack.ui.theme.MindSnackTheme
 import com.comppot.mindsnack.ui.utils.applyFocusAlpha
 
@@ -61,15 +60,12 @@ fun ArticleScreen(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         snackbarHost = { CustomSnackBar() }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            when {
-                state.isLoading -> FullScreenLoading()
-                state.articleDetails != null -> ArticleDetailsList(
-                    state.articleDetails,
-                    state.isRatingShown,
-                    viewModel::saveRating
-                )
-            }
+        StatusHandler(state.detailsStatus, modifier = Modifier.padding(innerPadding)) { details ->
+            ArticleDetailsList(
+                details,
+                state.isRatingShown,
+                viewModel::saveRating
+            )
         }
     }
 }

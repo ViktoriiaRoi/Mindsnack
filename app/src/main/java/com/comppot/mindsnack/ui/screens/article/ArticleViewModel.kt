@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.comppot.mindsnack.R
 import com.comppot.mindsnack.data.article.ArticleRepository
 import com.comppot.mindsnack.data.settings.SettingsRepository
+import com.comppot.mindsnack.data.common.CustomException
 import com.comppot.mindsnack.model.Rating
+import com.comppot.mindsnack.ui.common.Status
 import com.comppot.mindsnack.ui.utils.SnackbarController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,18 +26,23 @@ class ArticleViewModel @Inject constructor(
     private val _articleState = MutableStateFlow(ArticleState())
     val articleState = _articleState.asStateFlow()
 
-    private val articleId: Long? get() = _articleState.value.articleDetails?.id
+    private var articleId: Long? = null
 
     fun fetchArticleDetails(id: Long) = viewModelScope.launch {
-        articleRepository.getArticleDetails(id).onSuccess { articleDetails ->
-            _articleState.emit(
-                ArticleState(
-                    isLoading = false,
-                    articleDetails = articleDetails,
-                    isSaved = isArticleSaved(id)
-                )
+        val result = articleRepository.getArticleDetails(id)
+        val status = result.fold(
+            onSuccess = {
+                articleId = id
+                Status.Success(it)
+            },
+            onFailure = { error -> Status.Error(error as CustomException) }
+        )
+        _articleState.emit(
+            ArticleState(
+                detailsStatus = status,
+                isSaved = isArticleSaved(id)
             )
-        }
+        )
     }
 
     fun updateArticleSaved(isSaved: Boolean) = articleId?.let { id ->

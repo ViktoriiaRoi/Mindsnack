@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,19 +20,21 @@ import com.comppot.mindsnack.model.Article
 import com.comppot.mindsnack.model.Category
 import com.comppot.mindsnack.ui.components.ArticleItem
 import com.comppot.mindsnack.ui.components.CategoryItem
-import com.comppot.mindsnack.ui.components.EmptyListMessage
-import com.comppot.mindsnack.ui.components.FullScreenLoading
+import com.comppot.mindsnack.ui.components.StatusHandler
 
 @Composable
 fun HomeScreen(openArticle: (Long) -> Unit = {}, viewModel: HomeViewModel = hiltViewModel()) {
-    val state = viewModel.homeState.collectAsState().value
+    val state by viewModel.homeState.collectAsState()
 
     Column {
-        CategoryList(state.categories, state.selectedCategory, viewModel::selectCategory)
-        when {
-            state.isLoading -> FullScreenLoading()
-            state.articles.isEmpty() -> EmptyListMessage(stringResource(R.string.home_screen_no_articles))
-            else -> ArticleList(state.articles, openArticle)
+        if (state.categories.isNotEmpty()) {
+            CategoryList(state.categories, state.selectedCategory, viewModel::selectCategory)
+        }
+        StatusHandler(
+            status = state.articlesStatus,
+            emptyMessage = stringResource(R.string.home_screen_no_articles)
+        ) { articles ->
+            ArticleList(articles, openArticle)
         }
     }
 }

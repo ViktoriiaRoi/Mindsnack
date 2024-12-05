@@ -51,4 +51,8 @@
     <string name="dialog_theme_mode_dark">Темнa</string>
 
     <string name="snackbar_not_implemented">Ця функція поки не працює :(</string>
+
+    <string name="error_no_internet">Немає підключення до Інтернету.\nБудь ласка, перевірте з\'єднання</string>
+    <string name="error_server">Сталась помилка на сервері.\nБудь ласка, спробуйте пізніше</string>
+    <string name="error_unknown">Сталась невідома помилка</string>
 </resources>

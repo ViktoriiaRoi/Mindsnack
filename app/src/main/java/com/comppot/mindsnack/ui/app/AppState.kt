@@ -1,4 +1,4 @@
-package com.comppot.mindsnack.ui
+package com.comppot.mindsnack.ui.app
 
 import com.comppot.mindsnack.model.ThemeMode
 

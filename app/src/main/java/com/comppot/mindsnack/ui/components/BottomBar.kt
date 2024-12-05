@@ -135,7 +135,9 @@ private fun SaveArticleIcon(isSaved: Boolean, savedCount: Int) {
             if (isSaved) Icons.Default.Bookmark else Icons.Outlined.BookmarkBorder,
             contentDescription = stringResource(id = R.string.icon_save)
         )
-        Text("$savedCount", style = MaterialTheme.typography.titleLarge)
+        if (savedCount > 0) {
+            Text("$savedCount", style = MaterialTheme.typography.titleLarge)
+        }
     }
 }
 

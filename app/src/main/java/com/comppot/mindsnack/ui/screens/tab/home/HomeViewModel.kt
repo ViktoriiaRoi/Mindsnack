@@ -3,7 +3,9 @@ package com.comppot.mindsnack.ui.screens.tab.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.comppot.mindsnack.data.article.ArticleRepository
+import com.comppot.mindsnack.data.common.CustomException
 import com.comppot.mindsnack.model.Category
+import com.comppot.mindsnack.ui.common.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +31,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun selectCategory(category: Category) = viewModelScope.launch {
-        _homeState.update { it.copy(isLoading = true, selectedCategory = category) }
+        _homeState.update { it.copy(selectedCategory = category) }
         getRecommendations(category)
     }
 
@@ -41,8 +43,12 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun getRecommendations(category: Category) {
-        articleRepository.getRecommendations(category).onSuccess { articles ->
-            _homeState.update { it.copy(isLoading = false, articles = articles) }
-        }
+        _homeState.update { it.copy(articlesStatus = Status.Loading) }
+        val result = articleRepository.getRecommendations(category)
+        val status = result.fold(
+            onSuccess = { if (it.isEmpty()) Status.Empty else Status.Success(it) },
+            onFailure = { error -> Status.Error(error as CustomException) }
+        )
+        _homeState.update { it.copy(articlesStatus = status) }
     }
 }

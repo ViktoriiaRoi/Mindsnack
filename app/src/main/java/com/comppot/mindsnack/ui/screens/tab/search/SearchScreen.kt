@@ -32,15 +32,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.comppot.mindsnack.R
 import com.comppot.mindsnack.model.Article
+import com.comppot.mindsnack.ui.common.Status
 import com.comppot.mindsnack.ui.components.ArticleItem
 import com.comppot.mindsnack.ui.components.CustomSearchBar
-import com.comppot.mindsnack.ui.components.EmptyListMessage
-import com.comppot.mindsnack.ui.components.FullScreenLoading
+import com.comppot.mindsnack.ui.components.StatusHandler
 import com.comppot.mindsnack.ui.components.SuggestBookDialog
 
 @Composable
 fun SearchScreen(openArticle: (Long) -> Unit = {}, viewModel: SearchViewModel = hiltViewModel()) {
-    val state = viewModel.searchState.collectAsState().value
+    val status = viewModel.searchStatus.collectAsState().value
     var isDialogShown by remember { mutableStateOf(false) }
 
     Column(
@@ -52,13 +52,14 @@ fun SearchScreen(openArticle: (Long) -> Unit = {}, viewModel: SearchViewModel = 
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             onSearch = viewModel::searchArticles,
-            showSuggestion = state.articles.isEmpty(),
+            showSuggestion = status is Status.Empty,
             onSuggestClick = { isDialogShown = true }
         )
-        when {
-            state.isLoading -> FullScreenLoading()
-            state.articles.isEmpty() -> EmptyListMessage(stringResource(R.string.search_screen_no_articles))
-            else -> ArticleList(state.articles, openArticle)
+        StatusHandler(
+            status = status,
+            emptyMessage = stringResource(R.string.search_screen_no_articles)
+        ) { articles ->
+            ArticleList(articles, openArticle)
         }
     }
 

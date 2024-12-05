@@ -25,10 +25,14 @@ class AuthRepositoryImpl : AuthRepository {
 
     override fun getUser(): User = currentUser?.toUser() ?: User()
 
-    override fun getToken(): String? = currentUser?.let {
-        val task = it.getIdToken(false)
-        val result = Tasks.await(task, 20, TimeUnit.SECONDS)
-        result.token
+    override fun getToken(): String? = try {
+        currentUser?.let {
+            val task = it.getIdToken(false)
+            val result = Tasks.await(task, 20, TimeUnit.SECONDS)
+            result.token
+        }
+    } catch (e: Exception) {
+        null
     }
 
     override fun logout(context: Context, onComplete: () -> Unit) {

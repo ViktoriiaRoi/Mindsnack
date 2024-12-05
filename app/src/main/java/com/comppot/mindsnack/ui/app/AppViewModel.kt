@@ -1,4 +1,4 @@
-package com.comppot.mindsnack.ui
+package com.comppot.mindsnack.ui.app
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
