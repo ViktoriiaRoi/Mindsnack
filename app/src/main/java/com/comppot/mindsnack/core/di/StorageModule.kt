@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.comppot.mindsnack.core.data.settings.SettingsStorage
 import com.comppot.mindsnack.core.data.settings.SettingsStorageImpl
-import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,16 +29,7 @@ object StorageModule {
 
     @Provides
     @Singleton
-    fun provideGson(): Gson {
-        return Gson()
-    }
-
-    @Provides
-    @Singleton
-    fun provideSettingsStorage(
-        dataStore: DataStore<Preferences>,
-        gson: Gson
-    ): SettingsStorage {
-        return SettingsStorageImpl(dataStore, gson)
+    fun provideSettingsStorage(dataStore: DataStore<Preferences>): SettingsStorage {
+        return SettingsStorageImpl(dataStore)
     }
 }

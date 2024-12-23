@@ -3,16 +3,15 @@ package com.comppot.mindsnack.articles.presentation.article
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.comppot.mindsnack.R
-import com.comppot.mindsnack.core.data.settings.SettingsRepository
-import com.comppot.mindsnack.core.common.CustomException
 import com.comppot.mindsnack.articles.domain.model.Rating
 import com.comppot.mindsnack.articles.domain.repository.ArticleRepository
+import com.comppot.mindsnack.articles.domain.repository.SavingRepository
+import com.comppot.mindsnack.core.common.CustomException
 import com.comppot.mindsnack.core.presentation.Status
 import com.comppot.mindsnack.core.presentation.utils.SnackbarController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ArticleViewModel @Inject constructor(
     private val articleRepository: ArticleRepository,
-    private val settingsRepository: SettingsRepository
+    private val savingRepository: SavingRepository
 ) : ViewModel() {
 
     private val _articleState = MutableStateFlow(ArticleState())
@@ -29,30 +28,36 @@ class ArticleViewModel @Inject constructor(
     private var articleId: Long? = null
 
     fun fetchArticleDetails(id: Long) = viewModelScope.launch {
-        val result = articleRepository.getArticleDetails(id)
-        val status = result.fold(
-            onSuccess = {
+        articleRepository.getArticleDetails(id)
+            .onSuccess {
                 articleId = id
-                Status.Success(it)
-            },
-            onFailure = { error -> Status.Error(error as CustomException) }
-        )
-        _articleState.emit(
-            ArticleState(
-                detailsStatus = status,
-                isSaved = isArticleSaved(id)
-            )
-        )
+                _articleState.emit(
+                    ArticleState(
+                        detailsStatus = Status.Success(it),
+                        isSaved = it.isSaved,
+                        savedCount = it.savedCount
+                    )
+                )
+            }.onFailure { error ->
+                _articleState.emit(
+                    ArticleState(Status.Error(error as CustomException))
+                )
+            }
     }
 
     fun updateArticleSaved(isSaved: Boolean) = articleId?.let { id ->
         viewModelScope.launch {
-            if (isSaved) {
-                settingsRepository.saveArticle(id)
+            val result = if (isSaved) {
+                savingRepository.saveArticle(id)
             } else {
-                settingsRepository.removeArticle(id)
+                savingRepository.removeArticle(id)
             }
-            _articleState.update { it.copy(isSaved = isSaved) }
+
+            result.onSuccess { savedCount ->
+                _articleState.update { it.copy(isSaved = isSaved, savedCount = savedCount) }
+            }.onFailure {
+                SnackbarController.showErrorMessage(it)
+            }
         }
     }
 
@@ -70,10 +75,5 @@ class ArticleViewModel @Inject constructor(
                     SnackbarController.showErrorMessage(it)
                 }
         }
-    }
-
-    private suspend fun isArticleSaved(id: Long): Boolean {
-        val savedList = settingsRepository.savedArticleIds.first()
-        return savedList.contains(id)
     }
 }

@@ -6,8 +6,6 @@ import com.comppot.mindsnack.core.presentation.Status
 data class ArticleState(
     val detailsStatus: Status<ArticleDetails> = Status.Loading,
     val isSaved: Boolean = false,
+    val savedCount: Int = 0,
     val isRatingShown: Boolean = true
-) {
-    val savedCount: Int
-        get() = detailsStatus.getDataOrNull()?.let { it.savedCount + if (isSaved) 1 else 0 } ?: 0
-}
+)

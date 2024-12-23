@@ -1,8 +1,11 @@
 package com.comppot.mindsnack.articles.di
 
 import com.comppot.mindsnack.articles.data.remote.ArticleApi
+import com.comppot.mindsnack.articles.data.remote.SavingApi
 import com.comppot.mindsnack.articles.data.repository.ArticleRepositoryImpl
+import com.comppot.mindsnack.articles.data.repository.SavingRepositoryImpl
 import com.comppot.mindsnack.articles.domain.repository.ArticleRepository
+import com.comppot.mindsnack.articles.domain.repository.SavingRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +23,18 @@ object ArticlesModule {
 
     @Provides
     @Singleton
+    fun provideSavingApi(retrofit: Retrofit): SavingApi =
+        retrofit.create(SavingApi::class.java)
+
+    @Provides
+    @Singleton
     fun provideArticleRepository(api: ArticleApi): ArticleRepository {
         return ArticleRepositoryImpl(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSavingRepository(api: SavingApi): SavingRepository {
+        return SavingRepositoryImpl(api)
     }
 }

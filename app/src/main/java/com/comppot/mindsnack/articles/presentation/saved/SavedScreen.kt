@@ -17,13 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.comppot.mindsnack.R
 import com.comppot.mindsnack.articles.domain.model.Article
-import com.comppot.mindsnack.core.presentation.Status
 import com.comppot.mindsnack.articles.presentation.components.SavedArticleItem
 import com.comppot.mindsnack.core.presentation.components.StatusHandler
 
 @Composable
 fun SavedScreen(openArticle: (Long) -> Unit = {}, viewModel: SavedViewModel = hiltViewModel()) {
-    val status by viewModel.articlesStatus.collectAsState(Status.Loading)
+    val status by viewModel.articlesStatus.collectAsState()
 
     StatusHandler(
         status = status,
