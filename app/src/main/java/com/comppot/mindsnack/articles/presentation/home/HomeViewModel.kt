@@ -26,23 +26,23 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun initState() = viewModelScope.launch {
-        getCategories()
-        getRecommendations(Category.ALL)
+        fetchCategories()
+        fetchRecommendations(Category.ALL)
     }
 
     fun selectCategory(category: Category) = viewModelScope.launch {
         _homeState.update { it.copy(selectedCategory = category) }
-        getRecommendations(category)
+        fetchRecommendations(category)
     }
 
-    private suspend fun getCategories() {
+    private suspend fun fetchCategories() {
         articleRepository.getCategories().onSuccess { categories ->
             val displayedCategories = listOf(Category.ALL) + categories
             _homeState.update { it.copy(categories = displayedCategories) }
         }
     }
 
-    private suspend fun getRecommendations(category: Category) {
+    private suspend fun fetchRecommendations(category: Category) {
         _homeState.update { it.copy(articlesStatus = Status.Loading) }
         val result = articleRepository.getRecommendations(category)
         val status = result.fold(

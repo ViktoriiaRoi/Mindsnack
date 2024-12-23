@@ -60,9 +60,16 @@ class ArticleViewModel @Inject constructor(
         SnackbarController.showMessage(R.string.snackbar_not_implemented)
     }
 
-    fun saveRating(rating: Rating) = viewModelScope.launch {
-        SnackbarController.showMessage(R.string.article_rating_success)
-        _articleState.update { it.copy(isRatingShown = false) }
+    fun saveRating(rating: Rating) = articleId?.let { id ->
+        viewModelScope.launch {
+            articleRepository.postRating(id, rating.value)
+                .onSuccess {
+                    _articleState.update { it.copy(isRatingShown = false) }
+                    SnackbarController.showMessage(R.string.article_rating_success)
+                }.onFailure {
+                    SnackbarController.showErrorMessage(it)
+                }
+        }
     }
 
     private suspend fun isArticleSaved(id: Long): Boolean {

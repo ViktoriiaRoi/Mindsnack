@@ -40,7 +40,7 @@ import com.comppot.mindsnack.core.presentation.components.SuggestBookDialog
 
 @Composable
 fun SearchScreen(openArticle: (Long) -> Unit = {}, viewModel: SearchViewModel = hiltViewModel()) {
-    val status = viewModel.searchStatus.collectAsState().value
+    val status by viewModel.searchStatus.collectAsState()
     var isDialogShown by remember { mutableStateOf(false) }
 
     Column(

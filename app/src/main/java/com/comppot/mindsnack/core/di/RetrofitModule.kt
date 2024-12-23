@@ -4,7 +4,6 @@ import com.comppot.mindsnack.BuildConfig
 import com.comppot.mindsnack.auth.data.AuthInterceptor
 import com.comppot.mindsnack.auth.domain.AuthRepository
 import com.comppot.mindsnack.core.common.Constants
-import com.comppot.mindsnack.core.data.api.MindSnackApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,9 +42,4 @@ object RetrofitModule {
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-
-    @Provides
-    @Singleton
-    fun provideMindSnackApi(retrofit: Retrofit): MindSnackApi =
-        retrofit.create(MindSnackApi::class.java)
 }

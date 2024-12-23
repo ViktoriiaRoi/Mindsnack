@@ -42,6 +42,8 @@ class SearchViewModel @Inject constructor(
     }
 
     fun suggestBook(title: String, author: String) = viewModelScope.launch {
-        SnackbarController.showMessage(R.string.search_screen_suggestion_succes)
+        articleRepository.suggestArticle(title, author)
+            .onSuccess { SnackbarController.showMessage(R.string.search_screen_suggestion_succes) }
+            .onFailure { SnackbarController.showErrorMessage(it) }
     }
 }

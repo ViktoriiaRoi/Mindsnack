@@ -13,8 +13,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.comppot.mindsnack.R
-import com.comppot.mindsnack.core.common.CustomException
 import com.comppot.mindsnack.core.presentation.Status
 
 @Composable
@@ -28,7 +26,7 @@ fun <T> StatusHandler(
         when (status) {
             is Status.Loading -> FullScreenLoading()
             is Status.Empty -> ErrorMessage(emptyMessage)
-            is Status.Error -> ErrorMessage(getMessageForError(status.error))
+            is Status.Error -> ErrorMessage(stringResource(status.error.messageId))
             is Status.Success -> onSuccess(status.data)
         }
     }
@@ -43,7 +41,9 @@ fun FullScreenLoading() {
 
 @Composable
 fun ErrorMessage(message: String) {
-    Box(modifier = Modifier.fillMaxSize().padding(horizontal = 32.dp)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 32.dp)) {
         Text(
             message,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -51,16 +51,6 @@ fun ErrorMessage(message: String) {
             textAlign = TextAlign.Center
         )
     }
-}
-
-@Composable
-private fun getMessageForError(error: CustomException): String {
-    val resId = when (error) {
-        CustomException.NoInternetConnection -> R.string.error_no_internet
-        CustomException.ServerError -> R.string.error_server
-        CustomException.UnknownError -> R.string.error_unknown
-    }
-    return stringResource(resId)
 }
 
 @Preview
