@@ -2,7 +2,6 @@ package com.comppot.mindsnack.notifications.presentation.notification
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,11 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,11 +26,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.comppot.mindsnack.R
-import com.comppot.mindsnack.notifications.domain.model.Notification
-import com.comppot.mindsnack.core.presentation.components.ErrorMessage
-import com.comppot.mindsnack.core.presentation.components.FullScreenLoading
+import com.comppot.mindsnack.core.presentation.components.StatusHandler
 import com.comppot.mindsnack.core.presentation.components.TopBarBackButton
 import com.comppot.mindsnack.core.presentation.utils.DateUtils
+import com.comppot.mindsnack.notifications.domain.model.Notification
 
 @Composable
 fun NotificationsScreen(
@@ -42,19 +43,33 @@ fun NotificationsScreen(
         topBar = { TopBarBackButton(screenTitle, navigateUp) },
         containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            when {
-                state.isLoading -> FullScreenLoading()
-                state.notifications.isEmpty() -> ErrorMessage(stringResource(R.string.notification_screen_no_notifications))
-                else -> NotificationList(state.notifications)
-            }
+        StatusHandler(
+            status = state.notificationStatus,
+            modifier = Modifier.padding(innerPadding),
+            emptyMessage = stringResource(R.string.notification_screen_no_notifications)
+        ) { notifications ->
+            NotificationList(notifications, viewModel::readNotification)
         }
     }
 }
 
 @Composable
-private fun NotificationList(notifications: List<Notification>) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+private fun NotificationList(notifications: List<Notification>, onRead: (Notification) -> Unit) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.map { it.index } }
+            .collect { visibleIndices ->
+                visibleIndices.forEach { index ->
+                    val notification = notifications[index]
+                    if (!notification.wasRead) {
+                        onRead(notification)
+                    }
+                }
+            }
+    }
+
+    LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
         items(notifications) {
             NotificationItem(
                 it, modifier = Modifier
