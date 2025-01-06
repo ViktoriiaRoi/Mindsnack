@@ -3,7 +3,7 @@ package com.comppot.mindsnack.profile.presentation.login
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.comppot.mindsnack.core.data.settings.SettingsRepository
+import com.comppot.mindsnack.profile.domain.repository.ProfileRepository
 import com.firebase.ui.auth.AuthUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+    private val profileRepository: ProfileRepository
 ) : ViewModel() {
 
     private val authUI: AuthUI = AuthUI.getInstance()
@@ -27,6 +27,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onLoginSuccess() = viewModelScope.launch {
-        settingsRepository.setLoginTimeToNow()
+        // TODO: Only when success navigate to home screen
+        profileRepository.createProfile()
     }
 }

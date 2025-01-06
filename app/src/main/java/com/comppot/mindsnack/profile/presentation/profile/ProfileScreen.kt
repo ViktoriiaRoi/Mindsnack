@@ -64,7 +64,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
 
     when (dialogState.value) {
         ProfileDialogType.THEME_MODE -> ThemeModeDialog(
-            initialThemeId = state.preferences.themeMode.id,
+            initialTheme = state.preferences.themeMode,
             onSave = { viewModel.updateThemeMode(it) },
             onDismiss = { dialogState.value = null },
         )

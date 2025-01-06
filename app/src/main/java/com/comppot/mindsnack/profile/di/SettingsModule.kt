@@ -1,11 +1,11 @@
-package com.comppot.mindsnack.core.di
+package com.comppot.mindsnack.profile.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.comppot.mindsnack.core.data.settings.SettingsStorage
-import com.comppot.mindsnack.core.data.settings.SettingsStorageImpl
+import com.comppot.mindsnack.profile.data.local.SettingsStorage
+import com.comppot.mindsnack.profile.data.local.SettingsStorageImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object StorageModule {
+object SettingsModule {
 
     private const val SETTINGS_DATA_STORE = "settings"
 

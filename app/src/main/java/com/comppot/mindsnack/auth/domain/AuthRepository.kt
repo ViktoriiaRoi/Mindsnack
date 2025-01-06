@@ -5,7 +5,7 @@ import com.comppot.mindsnack.profile.domain.model.User
 
 interface AuthRepository {
     fun isAuthorized(): Boolean
-    fun getUser(): User
+    fun getUser(): User?
     fun getToken(): String?
     fun logout(context: Context, onComplete: () -> Unit)
 }

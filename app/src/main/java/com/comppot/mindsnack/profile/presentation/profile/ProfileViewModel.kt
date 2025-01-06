@@ -2,8 +2,10 @@ package com.comppot.mindsnack.profile.presentation.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.comppot.mindsnack.profile.domain.model.ThemeMode
+import com.comppot.mindsnack.profile.domain.model.User
 import com.comppot.mindsnack.auth.domain.AuthRepository
-import com.comppot.mindsnack.core.data.settings.SettingsRepository
+import com.comppot.mindsnack.profile.domain.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -13,13 +15,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val settingsRepository: SettingsRepository
+    private val profileRepository: ProfileRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    val profileState = settingsRepository.userPreferences.map { preferences ->
+    // TODO: get user from profile repository
+    private val user = authRepository.getUser() ?: User()
+
+    val profileState = profileRepository.userPreferences.map { preferences ->
         ProfileState(
-            user = authRepository.getUser(),
+            user = user,
             preferences = preferences
         )
     }.stateIn(
@@ -28,12 +33,7 @@ class ProfileViewModel @Inject constructor(
         initialValue = ProfileState()
     )
 
-
-    fun updateThemeMode(value: Int) = viewModelScope.launch {
-        settingsRepository.updateThemeMode(value)
-    }
-
-    fun updateNotifications(value: Boolean) = viewModelScope.launch {
-        settingsRepository.updateNotifications(value)
+    fun updateThemeMode(value: ThemeMode) = viewModelScope.launch {
+        profileRepository.updatePreferences(themeMode = value)
     }
 }

@@ -17,7 +17,7 @@ class AuthRepositoryImpl : AuthRepository {
 
     override fun isAuthorized() = currentUser != null
 
-    override fun getUser(): User = currentUser?.toUser() ?: User()
+    override fun getUser(): User? = currentUser?.toUser()
 
     override fun getToken(): String? = try {
         currentUser?.let {

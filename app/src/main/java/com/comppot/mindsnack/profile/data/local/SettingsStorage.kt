@@ -1,11 +1,10 @@
-package com.comppot.mindsnack.core.data.settings
+package com.comppot.mindsnack.profile.data.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
 import com.comppot.mindsnack.profile.domain.model.ThemeMode
 import com.comppot.mindsnack.profile.domain.model.UserPreferences
 import kotlinx.coroutines.flow.Flow
@@ -14,11 +13,8 @@ import javax.inject.Inject
 
 interface SettingsStorage {
     val userPreferences: Flow<UserPreferences>
-    val loginTimestamp: Flow<Long>
-
-    suspend fun updateThemeMode(themeMode: Int)
+    suspend fun updateThemeMode(themeMode: ThemeMode)
     suspend fun updateNotifications(notifications: Boolean)
-    suspend fun updateLoginTimestamp(timestamp: Long)
     suspend fun clear()
 }
 
@@ -30,25 +26,15 @@ class SettingsStorageImpl @Inject constructor(
         preferences.getUserPreferences()
     }
 
-    override val loginTimestamp: Flow<Long> = dataStore.data.map { preferences ->
-        preferences[LOGIN_TIMESTAMP] ?: System.currentTimeMillis()
-    }
-
-    override suspend fun updateThemeMode(themeMode: Int) {
+    override suspend fun updateThemeMode(themeMode: ThemeMode) {
         dataStore.edit { preferences ->
-            preferences[PREFERENCE_THEME_MODE] = themeMode
+            preferences[PREFERENCE_THEME_ID] = themeMode.id
         }
     }
 
     override suspend fun updateNotifications(notifications: Boolean) {
         dataStore.edit { preferences ->
             preferences[PREFERENCE_NOTIFICATIONS] = notifications
-        }
-    }
-
-    override suspend fun updateLoginTimestamp(timestamp: Long) {
-        dataStore.edit { preferences ->
-            preferences[LOGIN_TIMESTAMP] = timestamp
         }
     }
 
@@ -59,14 +45,13 @@ class SettingsStorageImpl @Inject constructor(
     }
 
     private fun Preferences.getUserPreferences(): UserPreferences {
-        val themeMode = ThemeMode.fromId(this[PREFERENCE_THEME_MODE])
+        val themeMode = ThemeMode.fromId(this[PREFERENCE_THEME_ID])
         val notifications = this[PREFERENCE_NOTIFICATIONS] ?: true
         return UserPreferences(themeMode, notifications)
     }
 
     companion object {
-        private val PREFERENCE_THEME_MODE = intPreferencesKey("preference_theme_mode")
+        private val PREFERENCE_THEME_ID = intPreferencesKey("preference_theme_mode")
         private val PREFERENCE_NOTIFICATIONS = booleanPreferencesKey("preference_notifications")
-        private val LOGIN_TIMESTAMP = longPreferencesKey("login_timestamp")
     }
 }

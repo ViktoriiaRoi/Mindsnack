@@ -17,7 +17,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -100,18 +99,18 @@ fun SuggestBookDialog(
 
 @Composable
 fun ThemeModeDialog(
-    initialThemeId: Int,
-    onSave: (Int) -> Unit = { _ -> },
+    initialTheme: ThemeMode,
+    onSave: (ThemeMode) -> Unit = { _ -> },
     onDismiss: () -> Unit = {}
 ) {
-    var selectedThemeId by remember { mutableIntStateOf(initialThemeId) }
+    var selectedTheme by remember { mutableStateOf(initialTheme) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         dismissButton = { DismissButton(onDismiss) },
         confirmButton = {
             ConfirmButton {
-                onSave(selectedThemeId)
+                onSave(selectedTheme)
                 onDismiss()
             }
         },
@@ -121,9 +120,9 @@ fun ThemeModeDialog(
                 ThemeMode.entries.forEach { theme ->
                     ThemeButton(
                         theme = theme,
-                        isSelected = theme.id == selectedThemeId,
+                        isSelected = theme == selectedTheme,
                         modifier = Modifier.weight(1f),
-                        onClick = { selectedThemeId = theme.id }
+                        onClick = { selectedTheme = theme }
                     )
                 }
             }
@@ -217,6 +216,6 @@ fun SuggestBookDialogPreview() {
 @Composable
 fun ThemeModeDialogPreview() {
     ThemeModeDialog(
-        initialThemeId = ThemeMode.LIGHT.id
+        initialTheme = ThemeMode.LIGHT
     )
 }

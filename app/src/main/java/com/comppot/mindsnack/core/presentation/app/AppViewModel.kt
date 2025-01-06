@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.comppot.mindsnack.auth.domain.AuthRepository
 import com.comppot.mindsnack.core.presentation.Screen
-import com.comppot.mindsnack.core.data.settings.SettingsRepository
+import com.comppot.mindsnack.profile.domain.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -16,10 +16,10 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val settingsRepository: SettingsRepository
+    private val profileRepository: ProfileRepository
 ) : ViewModel() {
 
-    val appState = settingsRepository.userPreferences.map { preferences ->
+    val appState = profileRepository.userPreferences.map { preferences ->
         AppState(preferences.themeMode)
     }.stateIn(
         scope = viewModelScope,
@@ -33,7 +33,7 @@ class AppViewModel @Inject constructor(
     fun logout(context: Context, onComplete: () -> Unit) {
         authRepository.logout(context) {
             viewModelScope.launch {
-                settingsRepository.clear()
+                profileRepository.clearPreferences()
                 onComplete()
             }
         }
