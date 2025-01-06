@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -22,9 +23,6 @@ private val LightColorScheme = lightColorScheme(
     secondary = PurpleGrey40,
     tertiary = Pink40
 )
-
-private fun ColorScheme.adjustForDark(): ColorScheme =
-    copy(surface = this.surfaceContainerHigh, surfaceContainer = this.surface)
 
 @Composable
 fun MindSnackTheme(
@@ -44,9 +42,25 @@ fun MindSnackTheme(
     }
 
     MaterialTheme(
-        colorScheme = if (darkTheme) colorScheme.adjustForDark() else colorScheme,
+        colorScheme = colorScheme
+            .adjustForDarkTheme(darkTheme)
+            .adjustPrimaryContainer(darkTheme),
         shapes = Shapes,
         typography = Typography,
         content = content
     )
+}
+
+private fun ColorScheme.adjustForDarkTheme(darkTheme: Boolean): ColorScheme =
+    if (darkTheme) copy(
+        surface = this.surfaceContainerHigh,
+        surfaceContainer = this.surface
+    ) else this
+
+private fun ColorScheme.adjustPrimaryContainer(darkTheme: Boolean): ColorScheme {
+    val isTooDark = !darkTheme && primaryContainer.luminance() < 0.2f
+    val isTooLight = darkTheme && primaryContainer.luminance() > 0.6f
+    return if (isTooDark || isTooLight) {
+        copy(primaryContainer = primaryContainer.copy(alpha = 0.25f))
+    } else this
 }
