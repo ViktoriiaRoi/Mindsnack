@@ -15,13 +15,14 @@ import com.comppot.mindsnack.core.presentation.components.TabTopBar
 import com.comppot.mindsnack.core.presentation.Screen
 
 @Composable
-fun BaseTabScreen(navController: NavHostController, onLogout: () -> Unit) {
+fun BaseTabScreen(navController: NavHostController, unreadNotifications: Int, onLogout: () -> Unit) {
     val bottomNavController = rememberNavController()
     Scaffold(
         topBar = {
             TabTopBar(
                 bottomNavController,
                 navigateTo = { navController.navigate(it.route) },
+                unreadNotifications = unreadNotifications,
                 logout = onLogout
             )
         },

@@ -7,6 +7,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,6 +33,7 @@ import com.comppot.mindsnack.core.presentation.Screen
 fun TabTopBar(
     bottomNavController: NavController,
     navigateTo: (Screen) -> Unit,
+    unreadNotifications: Int,
     logout: () -> Unit
 ) {
     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
@@ -52,7 +55,7 @@ fun TabTopBar(
         ),
         actions = {
             when (currentRoute) {
-                Screen.Tab.Home.route -> NotificationIcon { navigateTo(Screen.Notifications) }
+                Screen.Tab.Home.route -> NotificationIcon(unreadNotifications) { navigateTo(Screen.Notifications) }
                 Screen.Tab.Profile.route -> MenuIcon(logout)
             }
         }
@@ -71,12 +74,20 @@ fun TopBarBackButton(title: String, navigateUp: () -> Unit) {
 }
 
 @Composable
-private fun NotificationIcon(open: () -> Unit) {
-    IconButton(onClick = open) {
-        Icon(
-            Icons.Outlined.Notifications,
-            contentDescription = stringResource(id = R.string.screen_notifications)
-        )
+private fun NotificationIcon(unreadCount: Int, onClick: () -> Unit) {
+    IconButton(onClick) {
+        BadgedBox(
+            badge = {
+                if (unreadCount > 0) {
+                    Badge()
+                }
+            }
+        ) {
+            Icon(
+                Icons.Outlined.Notifications,
+                contentDescription = stringResource(id = R.string.screen_notifications)
+            )
+        }
     }
 }
 

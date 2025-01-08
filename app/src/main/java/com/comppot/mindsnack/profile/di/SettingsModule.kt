@@ -19,17 +19,11 @@ object SettingsModule {
 
     private const val SETTINGS_DATA_STORE = "settings"
 
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = SETTINGS_DATA_STORE)
+    private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = SETTINGS_DATA_STORE)
 
     @Provides
     @Singleton
-    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
-        return context.dataStore
-    }
-
-    @Provides
-    @Singleton
-    fun provideSettingsStorage(dataStore: DataStore<Preferences>): SettingsStorage {
-        return SettingsStorageImpl(dataStore)
+    fun provideSettingsStorage(@ApplicationContext context: Context): SettingsStorage {
+        return SettingsStorageImpl(context.settingsDataStore)
     }
 }

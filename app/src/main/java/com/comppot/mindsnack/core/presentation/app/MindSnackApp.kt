@@ -23,6 +23,7 @@ fun MindSnackApp() {
             MainNavGraph(
                 navController = navController,
                 startDestination = viewModel.getStartDestination(),
+                unreadNotifications = state.unreadNotifications,
                 onLogout = {
                     viewModel.logout(context) {
                         navController.navigateAndPop(Screen.Login.route)

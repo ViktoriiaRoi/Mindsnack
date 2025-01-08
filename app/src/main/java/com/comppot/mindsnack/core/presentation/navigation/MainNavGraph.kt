@@ -18,7 +18,12 @@ import com.comppot.mindsnack.notifications.presentation.notification.Notificatio
 const val ARTICLE_ID = "articleId"
 
 @Composable
-fun MainNavGraph(navController: NavHostController, startDestination: Screen, onLogout: () -> Unit) {
+fun MainNavGraph(
+    navController: NavHostController,
+    startDestination: Screen,
+    unreadNotifications: Int,
+    onLogout: () -> Unit
+) {
     NavHost(
         navController = navController,
         startDestination = startDestination.route,
@@ -27,7 +32,9 @@ fun MainNavGraph(navController: NavHostController, startDestination: Screen, onL
             .background(MaterialTheme.colorScheme.background)
     ) {
         composable(route = Screen.Login.route) { LoginScreen(navController) }
-        composable(route = Screen.Tab.route) { BaseTabScreen(navController, onLogout) }
+        composable(route = Screen.Tab.route) {
+            BaseTabScreen(navController, unreadNotifications, onLogout)
+        }
         composable(
             route = Screen.Article.route + "/{$ARTICLE_ID}",
             arguments = listOf(navArgument(ARTICLE_ID) { type = NavType.LongType })
