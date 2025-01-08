@@ -76,4 +76,10 @@ class ArticleViewModel @Inject constructor(
                 }
         }
     }
+
+    fun readArticle() = articleId?.let { id ->
+        viewModelScope.launch {
+            articleRepository.readArticle(id)
+        }
+    }
 }

@@ -20,14 +20,17 @@ interface ArticleApi {
         @Query("page") page: Int
     ): Response<Page<ArticleDTO>>
 
-    @GET("/article/details/{id}")
-    suspend fun getArticleDetails(@Path("id") id: Long): Response<ArticleDetailsDTO>
-
     @GET("/article/search")
     suspend fun searchArticles(
         @Query("search_string") searchString: String,
         @Query("page") page: Int
     ): Response<Page<ArticleDTO>>
+
+    @GET("/article/details/{id}")
+    suspend fun getArticleDetails(@Path("id") id: Long): Response<ArticleDetailsDTO>
+
+    @POST("/article/read")
+    suspend fun readArticle(@Query("articleId") id: Long): Response<Unit>
 
     @POST("/article/rating")
     suspend fun postRating(

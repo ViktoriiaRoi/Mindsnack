@@ -35,6 +35,10 @@ class ArticleRepositoryImpl @Inject constructor(private val api: ArticleApi) : A
             .map { articleDetailsDTO -> articleDetailsDTO.toArticleDetails() }
     }
 
+    override suspend fun readArticle(articleId: Long) {
+        runSafe { api.readArticle(articleId) }
+    }
+
     override suspend fun postRating(articleId: Long, score: Int): Result<Unit> {
         return runSafe { api.postRating(articleId, score) }
     }

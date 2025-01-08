@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +15,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,7 +65,8 @@ fun ArticleScreen(
             ArticleDetailsList(
                 details,
                 state.isRatingShown,
-                viewModel::saveRating
+                viewModel::saveRating,
+                viewModel::readArticle
             )
         }
     }
@@ -69,14 +76,25 @@ fun ArticleScreen(
 private fun ArticleDetailsList(
     articleDetails: ArticleDetails,
     isRatingShown: Boolean,
-    saveRating: (Rating) -> Unit
+    saveRating: (Rating) -> Unit,
+    onRead: () -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     val snapBehavior = rememberSnapFlingBehavior(lazyListState = lazyListState)
 
+    val lastCardIndex = articleDetails.numberOfCards - 1
+    var isArticleRead by remember { mutableStateOf(false) }
+
     fun isFocused(index: Int): Boolean {
         val currentIndex = lazyListState.firstVisibleItemIndex
         return index == currentIndex
+    }
+
+    TrackVisibleItem(lazyListState) { visibleIndex ->
+        if (visibleIndex == lastCardIndex && !isArticleRead) {
+            isArticleRead = true
+            onRead()
+        }
     }
 
     BoxWithConstraints {
@@ -90,16 +108,19 @@ private fun ArticleDetailsList(
                 ArticleDetailsHeader(articleDetails, modifier = Modifier.padding(vertical = 64.dp))
             }
             itemsIndexed(articleDetails.cards) { index, card ->
-                val progressText = "${index + 1}/${articleDetails.numberOfCards}"
-                val modifier = Modifier
-                    .fillMaxWidth()
-                    .applyFocusAlpha(isFocused(index))
-                if (!isRatingShown && index == articleDetails.numberOfCards - 1) {
-                    PlacedInCenter(maxHeight) {
-                        TextCard(card, progressText, modifier)
-                    }
+                val cardContent: @Composable () -> Unit = {
+                    TextCard(
+                        card = card,
+                        progressText = "${index + 1}/${articleDetails.numberOfCards}",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .applyFocusAlpha(isFocused(index))
+                    )
+                }
+                if (!isRatingShown && index == lastCardIndex) {
+                    PlacedInCenter(maxHeight) { cardContent() }
                 } else {
-                    TextCard(card, progressText, modifier)
+                    cardContent()
                 }
             }
             item {
@@ -108,13 +129,23 @@ private fun ArticleDetailsList(
                         RatingCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .applyFocusAlpha(isFocused(articleDetails.numberOfCards)),
+                                .applyFocusAlpha(isFocused(lastCardIndex + 1)),
                             onSubmit = saveRating
                         )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TrackVisibleItem(lazyListState: LazyListState, onItemChanged: (Int) -> Unit) {
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.firstVisibleItemIndex }
+            .collect { visibleIndex ->
+                onItemChanged(visibleIndex)
+            }
     }
 }
 
