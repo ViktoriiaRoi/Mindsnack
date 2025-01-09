@@ -21,5 +21,5 @@ fun ArticleDetailsDTO.toArticleDetails() = ArticleDetails(
     numberOfCards = numberOfCards,
     savedCount = savedCount,
     isSaved = isSaved,
-    cards = cards.map { it.toCardData() }
+    cards = cards.map { it.toCardData(defaultSaved = false) }
 )

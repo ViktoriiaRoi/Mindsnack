@@ -1,11 +1,10 @@
 package com.comppot.mindsnack.articles.presentation.article
 
 import com.comppot.mindsnack.articles.domain.model.ArticleDetails
-import com.comppot.mindsnack.core.presentation.Status
+import com.comppot.mindsnack.core.common.CustomException
 
 data class ArticleState(
-    val detailsStatus: Status<ArticleDetails> = Status.Loading,
-    val isSaved: Boolean = false,
-    val savedCount: Int = 0,
+    val details: ArticleDetails? = null,
+    val error: CustomException? = null,
     val isRatingShown: Boolean = true
 )

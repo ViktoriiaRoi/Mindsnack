@@ -2,7 +2,9 @@ package com.comppot.mindsnack.articles.data.repository
 
 import com.comppot.mindsnack.articles.data.remote.SavingApi
 import com.comppot.mindsnack.articles.data.remote.dto.toArticle
+import com.comppot.mindsnack.articles.data.remote.dto.toSavedCard
 import com.comppot.mindsnack.articles.domain.model.Article
+import com.comppot.mindsnack.articles.domain.model.SavedCard
 import com.comppot.mindsnack.articles.domain.repository.SavingRepository
 import com.comppot.mindsnack.core.data.utils.runSafe
 import javax.inject.Inject
@@ -20,5 +22,19 @@ class SavingRepositoryImpl @Inject constructor(private val api: SavingApi) : Sav
 
     override suspend fun removeArticle(articleId: Long): Result<Int> {
         return runSafe { api.removeArticle(articleId) }.map { it.savedCount }
+    }
+
+    override suspend fun getSavedCards(page: Int): Result<List<SavedCard>> {
+        return runSafe { api.getSavedCards(page) }.map {
+            it.objects.map { savedCardDTO -> savedCardDTO.toSavedCard() }
+        }
+    }
+
+    override suspend fun saveCard(cardId: Long): Result<Int> {
+        return runSafe { api.saveCard(cardId) }.map { it.savedCount }
+    }
+
+    override suspend fun removeCard(cardId: Long): Result<Int> {
+        return runSafe { api.removeCard(cardId) }.map { it.savedCount }
     }
 }

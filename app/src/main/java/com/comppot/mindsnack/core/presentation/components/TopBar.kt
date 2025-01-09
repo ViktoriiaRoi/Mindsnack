@@ -3,10 +3,7 @@
 package com.comppot.mindsnack.core.presentation.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenu
@@ -55,7 +52,7 @@ fun TabTopBar(
         ),
         actions = {
             when (currentRoute) {
-                Screen.Tab.Home.route -> NotificationIcon(unreadNotifications) { navigateTo(Screen.Notifications) }
+                Screen.Tab.Home.route -> NotificationButton(unreadNotifications) { navigateTo(Screen.Notifications) }
                 Screen.Tab.Profile.route -> MenuIcon(logout)
             }
         }
@@ -69,12 +66,12 @@ fun TopBarBackButton(title: String, navigateUp: () -> Unit) {
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent
         ),
-        navigationIcon = { BackIcon(navigateUp) },
+        navigationIcon = { IconButton(navigateUp) { BackIcon() } },
     )
 }
 
 @Composable
-private fun NotificationIcon(unreadCount: Int, onClick: () -> Unit) {
+private fun NotificationButton(unreadCount: Int, onClick: () -> Unit) {
     IconButton(onClick) {
         BadgedBox(
             badge = {
@@ -83,10 +80,7 @@ private fun NotificationIcon(unreadCount: Int, onClick: () -> Unit) {
                 }
             }
         ) {
-            Icon(
-                Icons.Outlined.Notifications,
-                contentDescription = stringResource(id = R.string.screen_notifications)
-            )
+            NotificationIcon()
         }
     }
 }
@@ -103,27 +97,11 @@ private fun MenuIcon(logout: () -> Unit) {
 }
 
 @Composable
-private fun BackIcon(navigateUp: () -> Unit) {
-    IconButton(onClick = navigateUp) {
-        Icon(
-            Icons.AutoMirrored.Default.ArrowBack,
-            contentDescription = stringResource(id = R.string.icon_back)
-        )
-    }
-}
-
-
-@Composable
 private fun OverflowMenu(content: @Composable () -> Unit) {
     var showMenu by remember { mutableStateOf(false) }
 
-    IconButton(onClick = {
-        showMenu = !showMenu
-    }) {
-        Icon(
-            imageVector = Icons.Outlined.MoreVert,
-            contentDescription = stringResource(id = R.string.icon_more),
-        )
+    IconButton(onClick = { showMenu = !showMenu }) {
+        MoreIcon()
     }
     DropdownMenu(
         expanded = showMenu,

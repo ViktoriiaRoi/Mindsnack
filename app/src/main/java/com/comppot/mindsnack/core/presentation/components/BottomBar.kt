@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.MaterialTheme
@@ -108,19 +106,13 @@ fun ArticleBottomBar(
     BackHandler(onBack = onBackPress)
     NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
         BottomToolbarItem(enabled = !isLoading, onClick = onBackPress) {
-            Icon(
-                Icons.AutoMirrored.Default.ArrowBack,
-                contentDescription = stringResource(id = R.string.icon_back)
-            )
+           BackIcon()
         }
         BottomToolbarItem(enabled = !isLoading, onClick = { onSavedClick(!isSaved) }) {
             SaveArticleIcon(isSaved, savedCount)
         }
         BottomToolbarItem(enabled = !isLoading, onClick = onShareClick) {
-            Icon(
-                Icons.Outlined.Share,
-                contentDescription = stringResource(id = R.string.icon_share),
-            )
+            ShareIcon()
         }
     }
 }
@@ -131,10 +123,7 @@ private fun SaveArticleIcon(isSaved: Boolean, savedCount: Int) {
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            if (isSaved) Icons.Default.Bookmark else Icons.Outlined.BookmarkBorder,
-            contentDescription = stringResource(id = R.string.icon_save)
-        )
+        SaveIcon(isSaved)
         if (savedCount > 0) {
             Text("$savedCount", style = MaterialTheme.typography.titleLarge)
         }

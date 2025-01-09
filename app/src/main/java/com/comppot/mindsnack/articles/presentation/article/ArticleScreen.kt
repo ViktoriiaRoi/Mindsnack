@@ -2,6 +2,7 @@ package com.comppot.mindsnack.articles.presentation.article
 
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,18 +23,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.comppot.mindsnack.articles.domain.model.ArticleDetails
-import com.comppot.mindsnack.articles.domain.model.Rating
 import com.comppot.mindsnack.articles.presentation.components.ArticleDetailsHeader
+import com.comppot.mindsnack.articles.presentation.components.CardItem
 import com.comppot.mindsnack.articles.presentation.components.RatingCard
-import com.comppot.mindsnack.articles.presentation.components.TextCard
 import com.comppot.mindsnack.core.presentation.components.ArticleBottomBar
 import com.comppot.mindsnack.core.presentation.components.CustomSnackBar
-import com.comppot.mindsnack.core.presentation.components.StatusHandler
+import com.comppot.mindsnack.core.presentation.components.ErrorMessage
+import com.comppot.mindsnack.core.presentation.components.FullScreenLoading
 import com.comppot.mindsnack.core.presentation.utils.applyFocusAlpha
 import com.comppot.mindsnack.ui.theme.MindSnackTheme
 
@@ -51,8 +53,8 @@ fun ArticleScreen(
     Scaffold(
         bottomBar = {
             ArticleBottomBar(
-                isSaved = state.isSaved,
-                savedCount = state.savedCount,
+                isSaved = state.details?.isSaved ?: false,
+                savedCount = state.details?.savedCount ?: 0,
                 onSavedClick = viewModel::updateArticleSaved,
                 onShareClick = viewModel::shareArticle,
                 navigateUp = navigateUp
@@ -61,14 +63,18 @@ fun ArticleScreen(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         snackbarHost = { CustomSnackBar() }
     ) { innerPadding ->
-        StatusHandler(state.detailsStatus, modifier = Modifier.padding(innerPadding)) { details ->
-            ArticleDetailsList(
-                details,
-                state.isRatingShown,
-                viewModel::saveRating,
-                viewModel::readArticle
-            )
+        Box(Modifier.padding(innerPadding)) {
+            ArticleStateHandler(state, viewModel)
         }
+    }
+}
+
+@Composable
+private fun ArticleStateHandler(state: ArticleState, viewModel: ArticleViewModel) {
+    when {
+        state.details != null -> ArticleDetailsList(state.details, state.isRatingShown, viewModel)
+        state.error != null -> ErrorMessage(stringResource(state.error.messageId))
+        else -> FullScreenLoading()
     }
 }
 
@@ -76,8 +82,7 @@ fun ArticleScreen(
 private fun ArticleDetailsList(
     articleDetails: ArticleDetails,
     isRatingShown: Boolean,
-    saveRating: (Rating) -> Unit,
-    onRead: () -> Unit
+    viewModel: ArticleViewModel
 ) {
     val lazyListState = rememberLazyListState()
     val snapBehavior = rememberSnapFlingBehavior(lazyListState = lazyListState)
@@ -93,7 +98,7 @@ private fun ArticleDetailsList(
     TrackVisibleItem(lazyListState) { visibleIndex ->
         if (visibleIndex == lastCardIndex && !isArticleRead) {
             isArticleRead = true
-            onRead()
+            viewModel.readArticle()
         }
     }
 
@@ -109,9 +114,10 @@ private fun ArticleDetailsList(
             }
             itemsIndexed(articleDetails.cards) { index, card ->
                 val cardContent: @Composable () -> Unit = {
-                    TextCard(
+                    CardItem(
                         card = card,
                         progressText = "${index + 1}/${articleDetails.numberOfCards}",
+                        onSaveChanged = { viewModel.updateCardSaved(card.id, it) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .applyFocusAlpha(isFocused(index))
@@ -130,7 +136,7 @@ private fun ArticleDetailsList(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .applyFocusAlpha(isFocused(lastCardIndex + 1)),
-                            onSubmit = saveRating
+                            onSubmit = viewModel::saveRating
                         )
                     }
                 }

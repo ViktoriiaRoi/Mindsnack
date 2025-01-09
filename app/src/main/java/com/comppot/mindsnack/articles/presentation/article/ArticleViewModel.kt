@@ -3,11 +3,11 @@ package com.comppot.mindsnack.articles.presentation.article
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.comppot.mindsnack.R
+import com.comppot.mindsnack.articles.domain.model.ArticleDetails
 import com.comppot.mindsnack.articles.domain.model.Rating
 import com.comppot.mindsnack.articles.domain.repository.ArticleRepository
 import com.comppot.mindsnack.articles.domain.repository.SavingRepository
 import com.comppot.mindsnack.core.common.CustomException
-import com.comppot.mindsnack.core.presentation.Status
 import com.comppot.mindsnack.core.presentation.utils.SnackbarController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,34 +29,28 @@ class ArticleViewModel @Inject constructor(
 
     fun fetchArticleDetails(id: Long) = viewModelScope.launch {
         articleRepository.getArticleDetails(id)
-            .onSuccess {
+            .onSuccess { details ->
                 articleId = id
                 _articleState.emit(
-                    ArticleState(
-                        detailsStatus = Status.Success(it),
-                        isSaved = it.isSaved,
-                        savedCount = it.savedCount
-                    )
+                    ArticleState(details = details)
                 )
-            }.onFailure { error ->
+            }.onFailure { throwable ->
                 _articleState.emit(
-                    ArticleState(Status.Error(error as CustomException))
+                    ArticleState(error = throwable as CustomException)
                 )
             }
     }
 
     fun updateArticleSaved(isSaved: Boolean) = articleId?.let { id ->
         viewModelScope.launch {
-            val result = if (isSaved) {
-                savingRepository.saveArticle(id)
-            } else {
-                savingRepository.removeArticle(id)
-            }
-
-            result.onSuccess { savedCount ->
-                _articleState.update { it.copy(isSaved = isSaved, savedCount = savedCount) }
-            }.onFailure {
-                SnackbarController.showErrorMessage(it)
+            handleSaving(
+                isSaved = isSaved,
+                saveAction = { savingRepository.saveArticle(id) },
+                removeAction = { savingRepository.removeArticle(id) },
+            ) { savedCount ->
+                updateArticleState {
+                    it.copy(isSaved = isSaved, savedCount = savedCount)
+                }
             }
         }
     }
@@ -80,6 +74,38 @@ class ArticleViewModel @Inject constructor(
     fun readArticle() = articleId?.let { id ->
         viewModelScope.launch {
             articleRepository.readArticle(id)
+        }
+    }
+
+    fun updateCardSaved(cardId: Long, isSaved: Boolean) = viewModelScope.launch {
+        handleSaving(
+            isSaved = isSaved,
+            saveAction = { savingRepository.saveCard(cardId) },
+            removeAction = { savingRepository.removeCard(cardId) },
+        ) {
+            updateArticleState { details ->
+                details.updateCard(cardId) { it.copy(isSaved = isSaved) }
+            }
+        }
+    }
+
+    private suspend fun handleSaving(
+        isSaved: Boolean,
+        saveAction: suspend () -> Result<Int>,
+        removeAction: suspend () -> Result<Int>,
+        onSuccess: (Int) -> Unit
+    ) {
+        val result = if (isSaved) saveAction() else removeAction()
+        result.onSuccess { savedCount ->
+            onSuccess(savedCount)
+        }.onFailure { throwable ->
+            SnackbarController.showErrorMessage(throwable)
+        }
+    }
+
+    private fun updateArticleState(transform: (ArticleDetails) -> ArticleDetails) {
+        _articleState.update { state ->
+            state.copy(details = state.details?.let(transform))
         }
     }
 }
