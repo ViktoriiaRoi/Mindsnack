@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -84,6 +85,7 @@ private fun ArticleDetailsList(
     isRatingShown: Boolean,
     viewModel: ArticleViewModel
 ) {
+    val context = LocalContext.current
     val lazyListState = rememberLazyListState()
     val snapBehavior = rememberSnapFlingBehavior(lazyListState = lazyListState)
 
@@ -118,6 +120,7 @@ private fun ArticleDetailsList(
                         card = card,
                         progressText = "${index + 1}/${articleDetails.numberOfCards}",
                         onSaveChanged = { viewModel.updateCardSaved(card.id, it) },
+                        onShare = { viewModel.shareCard(context, card) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .applyFocusAlpha(isFocused(index))

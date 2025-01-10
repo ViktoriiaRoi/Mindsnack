@@ -1,13 +1,16 @@
 package com.comppot.mindsnack.articles.presentation.article
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.comppot.mindsnack.R
 import com.comppot.mindsnack.articles.domain.model.ArticleDetails
+import com.comppot.mindsnack.articles.domain.model.CardData
 import com.comppot.mindsnack.articles.domain.model.Rating
 import com.comppot.mindsnack.articles.domain.repository.ArticleRepository
 import com.comppot.mindsnack.articles.domain.repository.SavingRepository
 import com.comppot.mindsnack.core.common.CustomException
+import com.comppot.mindsnack.core.presentation.utils.SharingUtils
 import com.comppot.mindsnack.core.presentation.utils.SnackbarController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,6 +90,10 @@ class ArticleViewModel @Inject constructor(
                 details.updateCard(cardId) { it.copy(isSaved = isSaved) }
             }
         }
+    }
+
+    fun shareCard(context: Context, cardData: CardData) {
+        SharingUtils.shareText(context, cardData.sharingText)
     }
 
     private suspend fun handleSaving(

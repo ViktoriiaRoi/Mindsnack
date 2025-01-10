@@ -22,13 +22,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.comppot.mindsnack.articles.domain.model.CardData
 import com.comppot.mindsnack.core.presentation.components.SaveIcon
+import com.comppot.mindsnack.core.presentation.components.ShareIcon
 
 @Composable
 fun CardItem(
     card: CardData,
     progressText: String,
     modifier: Modifier = Modifier,
-    onSaveChanged: (Boolean) -> Unit = {}
+    onSaveChanged: (Boolean) -> Unit = {},
+    onShare: () -> Unit = {}
 ) {
     Card(
         modifier = modifier,
@@ -59,6 +61,9 @@ fun CardItem(
                 Spacer(Modifier.weight(1f))
                 SaveCardIcon(card.isSaved) {
                     onSaveChanged(!card.isSaved)
+                }
+                IconButton(onShare) {
+                    ShareIcon()
                 }
             }
         }

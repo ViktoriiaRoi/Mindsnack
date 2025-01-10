@@ -5,4 +5,7 @@ data class CardData(
     val title: String?,
     val text: String,
     val isSaved: Boolean = false
-)
+) {
+    val sharingText: String
+        get() = listOfNotNull(title, text).joinToString("\n")
+}
