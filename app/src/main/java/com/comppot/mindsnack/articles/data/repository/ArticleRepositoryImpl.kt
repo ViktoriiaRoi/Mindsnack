@@ -1,7 +1,11 @@
 package com.comppot.mindsnack.articles.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.comppot.mindsnack.articles.data.paging.RecommendationsPagingSource
+import com.comppot.mindsnack.articles.data.paging.SearchPagingSource
 import com.comppot.mindsnack.articles.data.remote.ArticleApi
-import com.comppot.mindsnack.articles.data.remote.dto.toArticle
 import com.comppot.mindsnack.articles.data.remote.dto.toArticleDetails
 import com.comppot.mindsnack.articles.data.remote.dto.toCategory
 import com.comppot.mindsnack.articles.domain.model.Article
@@ -9,25 +13,30 @@ import com.comppot.mindsnack.articles.domain.model.ArticleDetails
 import com.comppot.mindsnack.articles.domain.model.Category
 import com.comppot.mindsnack.articles.domain.repository.ArticleRepository
 import com.comppot.mindsnack.core.data.utils.runSafe
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ArticleRepositoryImpl @Inject constructor(private val api: ArticleApi) : ArticleRepository {
+class ArticleRepositoryImpl @Inject constructor(
+    private val api: ArticleApi,
+    private val pagingConfig: PagingConfig
+) : ArticleRepository {
+
     override suspend fun getCategories(): Result<List<Category>> {
         return runSafe { api.getCategories() }.map {
             it.map { categoryDTO -> categoryDTO.toCategory() }
         }
     }
 
-    override suspend fun getRecommendations(category: Category, page: Int): Result<List<Article>> {
-        return runSafe { api.getRecommendations(category.id, page) }.map {
-            it.objects.map { articleDTO -> articleDTO.toArticle() }
-        }
+    override suspend fun getRecommendations(category: Category): Flow<PagingData<Article>> {
+        return Pager(pagingConfig) {
+            RecommendationsPagingSource(api, category)
+        }.flow
     }
 
-    override suspend fun searchArticles(query: String, page: Int): Result<List<Article>> {
-        return runSafe { api.searchArticles(query, page) }.map {
-            it.objects.map { articleDTO -> articleDTO.toArticle() }
-        }
+    override suspend fun searchArticles(query: String): Flow<PagingData<Article>> {
+        return Pager(pagingConfig) {
+            SearchPagingSource(api, query)
+        }.flow
     }
 
     override suspend fun getArticleDetails(id: Long): Result<ArticleDetails> {

@@ -1,44 +1,36 @@
+@file:OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+
 package com.comppot.mindsnack.articles.presentation.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.comppot.mindsnack.R
-import com.comppot.mindsnack.articles.domain.model.Article
 import com.comppot.mindsnack.articles.domain.repository.ArticleRepository
-import com.comppot.mindsnack.core.common.CustomException
-import com.comppot.mindsnack.core.presentation.Status
 import com.comppot.mindsnack.core.presentation.utils.SnackbarController
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val articleRepository: ArticleRepository
 ) : ViewModel() {
 
-    private val _searchStatus = MutableStateFlow<Status<List<Article>>>(Status.Loading)
-    val searchStatus = _searchStatus.asStateFlow()
+    private val _queryState = MutableStateFlow("")
 
-    init {
-        initState()
-    }
+    val articlesState = _queryState.debounce(300.milliseconds).flatMapLatest { query ->
+        articleRepository.searchArticles(query)
+    }.cachedIn(viewModelScope)
 
-    private fun initState() = viewModelScope.launch {
-        searchArticles("")
-    }
-
-    fun searchArticles(text: String) = viewModelScope.launch {
-        _searchStatus.update { Status.Loading }
-        val result = articleRepository.searchArticles(text)
-        val status = result.fold(
-            onSuccess = { if (it.isEmpty()) Status.Empty else Status.Success(it) },
-            onFailure = { error -> Status.Error(error as CustomException) }
-        )
-        _searchStatus.update { status }
+    fun searchArticles(query: String) = viewModelScope.launch {
+        _queryState.value = query
     }
 
     fun suggestBook(title: String, author: String) = viewModelScope.launch {

@@ -1,5 +1,6 @@
 package com.comppot.mindsnack.articles.di
 
+import androidx.paging.PagingConfig
 import com.comppot.mindsnack.articles.data.remote.ArticleApi
 import com.comppot.mindsnack.articles.data.remote.SavingApi
 import com.comppot.mindsnack.articles.data.repository.ArticleRepositoryImpl
@@ -29,7 +30,8 @@ object ArticlesModule {
     @Provides
     @Singleton
     fun provideArticleRepository(api: ArticleApi): ArticleRepository {
-        return ArticleRepositoryImpl(api)
+        val pagingConfig = PagingConfig(pageSize = 10)
+        return ArticleRepositoryImpl(api, pagingConfig)
     }
 
     @Provides

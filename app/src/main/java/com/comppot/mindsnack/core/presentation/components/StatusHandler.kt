@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.comppot.mindsnack.core.common.CustomException
 import com.comppot.mindsnack.core.presentation.Status
 
 @Composable
@@ -37,6 +38,11 @@ fun FullScreenLoading() {
     Box(modifier = Modifier.fillMaxSize()) {
         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
     }
+}
+
+@Composable
+fun ErrorMessage(error: CustomException) {
+    ErrorMessage(stringResource(error.messageId))
 }
 
 @Composable
