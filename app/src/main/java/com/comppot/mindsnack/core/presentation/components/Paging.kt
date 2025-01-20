@@ -5,6 +5,7 @@ package com.comppot.mindsnack.core.presentation.components
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.comppot.mindsnack.core.common.CustomException
@@ -14,10 +15,15 @@ fun <T : Any> LazyPagingItems<T>.isEmpty(): Boolean {
 }
 
 @Composable
-fun <T : Any> PagingBox(items: LazyPagingItems<T>, content: @Composable () -> Unit) {
+fun <T : Any> PagingBox(
+    items: LazyPagingItems<T>,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
     PullToRefreshBox(
         isRefreshing = items.loadState.refresh is LoadState.Loading,
         onRefresh = { items.refresh() },
+        modifier = modifier
     ) {
         content()
     }

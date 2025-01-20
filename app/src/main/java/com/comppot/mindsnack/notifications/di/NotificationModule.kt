@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.paging.PagingConfig
 import com.comppot.mindsnack.notifications.data.local.NotificationStorage
 import com.comppot.mindsnack.notifications.data.local.NotificationStorageImpl
 import com.comppot.mindsnack.notifications.data.remote.NotificationApi
@@ -42,6 +43,7 @@ object NotificationModule {
         api: NotificationApi,
         storage: NotificationStorage
     ): NotificationRepository {
-        return NotificationRepositoryImpl(api, storage)
+        val pagingConfig = PagingConfig(pageSize = 10)
+        return NotificationRepositoryImpl(api, storage, pagingConfig)
     }
 }
