@@ -1,19 +1,27 @@
 package com.comppot.mindsnack.articles.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.comppot.mindsnack.articles.data.paging.SavedArticlesPagingSource
+import com.comppot.mindsnack.articles.data.paging.SavedCardsPagingSource
 import com.comppot.mindsnack.articles.data.remote.SavingApi
-import com.comppot.mindsnack.articles.data.remote.dto.toArticle
-import com.comppot.mindsnack.articles.data.remote.dto.toSavedCard
 import com.comppot.mindsnack.articles.domain.model.Article
 import com.comppot.mindsnack.articles.domain.model.SavedCard
 import com.comppot.mindsnack.articles.domain.repository.SavingRepository
 import com.comppot.mindsnack.core.data.utils.runSafe
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SavingRepositoryImpl @Inject constructor(private val api: SavingApi) : SavingRepository {
-    override suspend fun getSavedArticles(page: Int): Result<List<Article>> {
-        return runSafe { api.getSavedArticles(page) }.map {
-            it.objects.map { articleDTO -> articleDTO.toArticle() }
-        }
+class SavingRepositoryImpl @Inject constructor(
+    private val api: SavingApi,
+    private val pagingConfig: PagingConfig
+) : SavingRepository {
+
+    override suspend fun getSavedArticles(): Flow<PagingData<Article>> {
+        return Pager(pagingConfig) {
+            SavedArticlesPagingSource(api)
+        }.flow
     }
 
     override suspend fun saveArticle(articleId: Long): Result<Int> {
@@ -24,10 +32,10 @@ class SavingRepositoryImpl @Inject constructor(private val api: SavingApi) : Sav
         return runSafe { api.removeArticle(articleId) }.map { it.savedCount }
     }
 
-    override suspend fun getSavedCards(page: Int): Result<List<SavedCard>> {
-        return runSafe { api.getSavedCards(page) }.map {
-            it.objects.map { savedCardDTO -> savedCardDTO.toSavedCard() }
-        }
+    override suspend fun getSavedCards(): Flow<PagingData<SavedCard>> {
+        return Pager(pagingConfig) {
+            SavedCardsPagingSource(api)
+        }.flow
     }
 
     override suspend fun saveCard(cardId: Long): Result<Int> {

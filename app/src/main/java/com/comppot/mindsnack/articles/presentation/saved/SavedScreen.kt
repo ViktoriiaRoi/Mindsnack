@@ -6,7 +6,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.comppot.mindsnack.R
 
 enum class SavedScreenTab(@StringRes val title: Int) {
@@ -24,14 +24,16 @@ enum class SavedScreenTab(@StringRes val title: Int) {
 
 @Composable
 fun SavedScreen(openArticle: (Long) -> Unit = {}, viewModel: SavedViewModel = hiltViewModel()) {
-    val state by viewModel.savedState.collectAsState()
     var selectedTab by remember { mutableStateOf(SavedScreenTab.CARDS) }
+
+    val cards = viewModel.cardsState.collectAsLazyPagingItems()
+    val articles = viewModel.articlesState.collectAsLazyPagingItems()
 
     Column {
         SavedTabRow(selectedTab) { selectedTab = it }
         when (selectedTab) {
-            SavedScreenTab.CARDS -> CardsTab(state.cardsStatus, openArticle)
-            SavedScreenTab.ARTICLES -> ArticlesTab(state.articlesStatus, openArticle)
+            SavedScreenTab.CARDS -> CardsTab(cards, openArticle)
+            SavedScreenTab.ARTICLES -> ArticlesTab(articles, openArticle)
         }
     }
 }

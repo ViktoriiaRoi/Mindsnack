@@ -37,6 +37,7 @@ object ArticlesModule {
     @Provides
     @Singleton
     fun provideSavingRepository(api: SavingApi): SavingRepository {
-        return SavingRepositoryImpl(api)
+        val pagingConfig = PagingConfig(pageSize = 10)
+        return SavingRepositoryImpl(api, pagingConfig)
     }
 }
