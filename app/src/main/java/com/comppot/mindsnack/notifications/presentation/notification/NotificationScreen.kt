@@ -32,9 +32,7 @@ import androidx.paging.compose.itemKey
 import com.comppot.mindsnack.R
 import com.comppot.mindsnack.core.presentation.components.AppendStateHandler
 import com.comppot.mindsnack.core.presentation.components.PagingBox
-import com.comppot.mindsnack.core.presentation.components.RefreshStateHandler
 import com.comppot.mindsnack.core.presentation.components.TopBarBackButton
-import com.comppot.mindsnack.core.presentation.components.isEmpty
 import com.comppot.mindsnack.core.presentation.utils.DateUtils
 import com.comppot.mindsnack.core.presentation.utils.takeColorIf
 import com.comppot.mindsnack.notifications.domain.model.Notification
@@ -69,22 +67,23 @@ private fun NotificationPagingList(
     val listState = rememberLazyListState()
     TrackVisibleNotifications(notifications, listState, onRead)
 
-    PagingBox(notifications, modifier) {
+    PagingBox(
+        notifications,
+        modifier = modifier,
+        emptyMessage = stringResource(R.string.notification_screen_no_notifications)
+    ) {
         LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
             items(notifications.itemCount, key = notifications.itemKey { it.id }) { index ->
                 notifications[index]?.let {
-                    NotificationItem(it, modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 2.dp))
+                    NotificationItem(
+                        it, modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 2.dp)
+                    )
                 }
             }
-            item { AppendStateHandler(notifications.loadState.append) }
+            item { AppendStateHandler(notifications) }
         }
-        RefreshStateHandler(
-            notifications.loadState.refresh,
-            isEmpty = notifications.isEmpty(),
-            emptyMessage = stringResource(R.string.notification_screen_no_notifications)
-        )
     }
 }
 

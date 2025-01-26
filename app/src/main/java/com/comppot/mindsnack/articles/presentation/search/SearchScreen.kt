@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -40,7 +43,6 @@ import com.comppot.mindsnack.articles.presentation.components.ArticleItem
 import com.comppot.mindsnack.articles.presentation.components.CustomSearchBar
 import com.comppot.mindsnack.core.presentation.components.AppendStateHandler
 import com.comppot.mindsnack.core.presentation.components.PagingBox
-import com.comppot.mindsnack.core.presentation.components.RefreshStateHandler
 import com.comppot.mindsnack.core.presentation.components.SuggestBookDialog
 import com.comppot.mindsnack.core.presentation.components.isEmpty
 
@@ -138,24 +140,28 @@ private fun AddIcon(onClick: () -> Unit) {
 
 @Composable
 private fun ArticlePagingList(articles: LazyPagingItems<Article>, onArticleClick: (Long) -> Unit) {
-    PagingBox(articles) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(articles.loadState.refresh) {
+        if (articles.loadState.refresh is LoadState.NotLoading) {
+            listState.scrollToItem(0)
+        }
+    }
+
+    PagingBox(articles, emptyMessage = stringResource(R.string.search_screen_no_articles)) {
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            state = listState
         ) {
             items(articles.itemCount, key = articles.itemKey { it.id }) { index ->
                 articles[index]?.let {
                     ArticleItem(it, Modifier.fillMaxWidth(), onArticleClick)
                 }
             }
-            item { AppendStateHandler(articles.loadState.append) }
+            item { AppendStateHandler(articles) }
         }
-        RefreshStateHandler(
-            articles.loadState.refresh,
-            isEmpty = articles.isEmpty(),
-            emptyMessage = stringResource(R.string.search_screen_no_articles)
-        )
     }
 }
 

@@ -26,8 +26,6 @@ import com.comppot.mindsnack.articles.presentation.components.ArticleItem
 import com.comppot.mindsnack.articles.presentation.components.CategoryItem
 import com.comppot.mindsnack.core.presentation.components.AppendStateHandler
 import com.comppot.mindsnack.core.presentation.components.PagingBox
-import com.comppot.mindsnack.core.presentation.components.RefreshStateHandler
-import com.comppot.mindsnack.core.presentation.components.isEmpty
 
 @Composable
 fun HomeScreen(openArticle: (Long) -> Unit = {}, viewModel: HomeViewModel = hiltViewModel()) {
@@ -60,7 +58,7 @@ private fun CategoryList(
 
 @Composable
 private fun ArticlePagingList(articles: LazyPagingItems<Article>, onArticleClick: (Long) -> Unit) {
-    PagingBox(articles) {
+    PagingBox(articles, emptyMessage = stringResource(R.string.home_screen_no_articles)) {
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -71,13 +69,8 @@ private fun ArticlePagingList(articles: LazyPagingItems<Article>, onArticleClick
                     ArticleItem(it, Modifier.fillMaxWidth(), onArticleClick)
                 }
             }
-            item { AppendStateHandler(articles.loadState.append) }
+            item { AppendStateHandler(articles) }
         }
-        RefreshStateHandler(
-            articles.loadState.refresh,
-            isEmpty = articles.isEmpty(),
-            emptyMessage = stringResource(R.string.home_screen_no_articles)
-        )
     }
 }
 

@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface ArticleRepository {
     suspend fun getCategories(): Result<List<Category>>
-    suspend fun getRecommendations(category: Category): Flow<PagingData<Article>>
-    suspend fun searchArticles(query: String): Flow<PagingData<Article>>
+    fun getRecommendations(category: Category): Flow<PagingData<Article>>
+    fun searchArticles(query: String): Flow<PagingData<Article>>
     suspend fun getArticleDetails(id: Long): Result<ArticleDetails>
     suspend fun readArticle(articleId: Long)
     suspend fun postRating(articleId: Long, score: Int): Result<Unit>

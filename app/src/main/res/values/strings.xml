@@ -58,4 +58,5 @@
     <string name="error_no_internet">Немає підключення до Інтернету.\nБудь ласка, перевірте з\'єднання</string>
     <string name="error_server">Сталась помилка на сервері.\nБудь ласка, спробуйте пізніше</string>
     <string name="error_unknown">Сталась невідома помилка</string>
+    <string name="error_message_retry">Повторити</string>
 </resources>

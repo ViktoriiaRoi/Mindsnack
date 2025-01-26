@@ -18,8 +18,6 @@ import com.comppot.mindsnack.articles.domain.model.Article
 import com.comppot.mindsnack.articles.presentation.components.SavedArticleItem
 import com.comppot.mindsnack.core.presentation.components.AppendStateHandler
 import com.comppot.mindsnack.core.presentation.components.PagingBox
-import com.comppot.mindsnack.core.presentation.components.RefreshStateHandler
-import com.comppot.mindsnack.core.presentation.components.isEmpty
 
 @Composable
 fun ArticlesTab(articles: LazyPagingItems<Article>, openArticle: (Long) -> Unit) {
@@ -28,7 +26,7 @@ fun ArticlesTab(articles: LazyPagingItems<Article>, openArticle: (Long) -> Unit)
 
 @Composable
 private fun ArticlePagingList(articles: LazyPagingItems<Article>, onArticleClick: (Long) -> Unit) {
-    PagingBox(articles) {
+    PagingBox(articles, emptyMessage = stringResource(R.string.saved_screen_no_articles)) {
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
             contentPadding = PaddingValues(16.dp),
@@ -46,14 +44,8 @@ private fun ArticlePagingList(articles: LazyPagingItems<Article>, onArticleClick
                 }
             }
             item(span = StaggeredGridItemSpan.FullLine) {
-                AppendStateHandler(articles.loadState.append)
+                AppendStateHandler(articles)
             }
         }
-
-        RefreshStateHandler(
-            articles.loadState.refresh,
-            isEmpty = articles.isEmpty(),
-            emptyMessage = stringResource(R.string.saved_screen_no_articles)
-        )
     }
 }

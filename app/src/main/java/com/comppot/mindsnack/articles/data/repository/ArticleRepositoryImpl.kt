@@ -27,13 +27,13 @@ class ArticleRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRecommendations(category: Category): Flow<PagingData<Article>> {
+    override fun getRecommendations(category: Category): Flow<PagingData<Article>> {
         return Pager(pagingConfig) {
             RecommendationsPagingSource(api, category)
         }.flow
     }
 
-    override suspend fun searchArticles(query: String): Flow<PagingData<Article>> {
+    override fun searchArticles(query: String): Flow<PagingData<Article>> {
         return Pager(pagingConfig) {
             SearchPagingSource(api, query)
         }.flow
