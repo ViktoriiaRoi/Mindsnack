@@ -1,3 +1,54 @@
 <resources>
-    <string name="app_name">MindSnack</string>
+    <string name="app_name" translatable="false">MindSnack</string>
+    <string name="screen_home">Головна</string>
+    <string name="screen_search">Пошук</string>
+    <string name="screen_saved">Збережено</string>
+    <string name="screen_profile">Профіль</string>
+    <string name="screen_notifications">Сповіщення</string>
+
+    <string name="icon_back">Назад</string>
+    <string name="icon_save">Зберегти</string>
+    <string name="icon_share">Поділитись</string>
+    <string name="icon_search">Шукати</string>
+    <string name="icon_clear">Очистити</string>
+    <string name="icon_edit">Редагувати</string>
+    <string name="icon_more">Більше</string>
+    <string name="icon_add">Додати</string>
+    <string name="menu_item_logout">Вийти</string>
+
+    <string name="article_card_info">%1$s - %2$d карток</string>
+    <string name="article_rating_title">Оцініть статтю</string>
+    <string name="article_rating_submit">Надіслати</string>
+    <string name="article_rating_success">Дякуємо! Вашу оцінку збережено</string>
+
+    <string name="home_screen_no_articles">Немає статей</string>
+
+    <string name="search_screen_no_articles">Статті не знайдені</string>
+    <string name="search_screen_suggestion_title">Немає книги?</string>
+    <string name="search_screen_suggestion_description">Запропонуйте про що нам написати</string>
+    <string name="search_screen_suggestion_succes">Дякуємо! Ваш запит прийнято</string>
+    <string name="search_bar_placeholder">Шукати…</string>
+
+    <string name="saved_screen_no_articles">Ще немає збережених статей</string>
+
+    <string name="profile_settings_full_name">Ваше ім\'я</string>
+    <string name="profile_settings_theme_mode">Тема</string>
+    <string name="profile_settings_notifications">Сповіщення</string>
+
+    <string name="notification_screen_no_notifications">Немає сповіщень</string>
+
+    <string name="dialog_cancel">Скасувати</string>
+    <string name="dialog_save">Зберегти</string>
+    <string name="dialog_edit_name_title">Редагувати ім\'я</string>
+    <string name="dialog_edit_name_first">Ім\'я</string>
+    <string name="dialog_edit_name_last">Прізвище</string>
+    <string name="dialog_suggest_book_title">Запропонувати книгу</string>
+    <string name="dialog_suggest_book_title_of_book">Назва книги</string>
+    <string name="dialog__suggest_book_author">Автор</string>
+    <string name="dialog_theme_mode_title">Вибрати тему</string>
+    <string name="dialog_theme_mode_auto">Системна</string>
+    <string name="dialog_theme_mode_light">Світлa</string>
+    <string name="dialog_theme_mode_dark">Темнa</string>
+
+    <string name="snackbar_not_implemented">Ця функція поки не працює :(</string>
 </resources>
