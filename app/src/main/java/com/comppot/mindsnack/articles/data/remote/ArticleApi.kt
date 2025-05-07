@@ -16,7 +16,7 @@ interface ArticleApi {
 
     @GET("/article/recommendations")
     suspend fun getRecommendations(
-        @Query("category_id") categoryId: Int,
+        @Query("category_id") categoryId: Int?,
         @Query("page") page: Int
     ): Response<Page<ArticleDTO>>
 

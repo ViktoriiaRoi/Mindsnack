@@ -15,7 +15,8 @@ class RecommendationsPagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
         val currentPage = params.key ?: 1
-        val result = runSafe { api.getRecommendations(category.id, currentPage) }
+        val categoryId = category.takeIf { it != Category.ALL }?.id
+        val result = runSafe { api.getRecommendations(categoryId, currentPage) }
         return result.fold({ page ->
             LoadResult.Page(
                 data = page.objects.map { it.toArticle() },

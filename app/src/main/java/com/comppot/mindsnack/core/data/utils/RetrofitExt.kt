@@ -10,11 +10,7 @@ fun <T> Response<T>.toResult(): Result<T> {
     return if (isSuccessful && body != null) {
         Result.success(body)
     } else {
-        val exception = when (code()) {
-            404, 500 -> CustomException.ServerError
-            else -> CustomException.UnknownError
-        }
-        Result.failure(exception)
+        Result.failure(CustomException.ServerError)
     }
 }
 
