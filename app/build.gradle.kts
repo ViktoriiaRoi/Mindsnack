@@ -45,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.15"
@@ -90,6 +91,16 @@ dependencies {
 
     // Gson
     implementation(libs.gson)
+
+    // Retrofit
+    implementation(libs.squareup.retrofit)
+    implementation(libs.squareup.gson)
+    implementation(libs.squareup.okhttp)
+    implementation(libs.squareup.okhttp.logging)
+
+    // Paging
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -29,6 +29,9 @@
     <string name="search_screen_suggestion_succes">Дякуємо! Ваш запит прийнято</string>
     <string name="search_bar_placeholder">Шукати…</string>
 
+    <string name="saved_screen_tab_cards">Картки</string>
+    <string name="saved_screen_tab_articles">Статті</string>
+    <string name="saved_screen_no_cards">Ще немає збережених карток</string>
     <string name="saved_screen_no_articles">Ще немає збережених статей</string>
 
     <string name="profile_settings_full_name">Ваше ім\'я</string>
@@ -51,4 +54,9 @@
     <string name="dialog_theme_mode_dark">Темнa</string>
 
     <string name="snackbar_not_implemented">Ця функція поки не працює :(</string>
+
+    <string name="error_no_internet">Немає підключення до Інтернету.\nБудь ласка, перевірте з\'єднання</string>
+    <string name="error_server">Сталась помилка на сервері.\nБудь ласка, спробуйте пізніше</string>
+    <string name="error_unknown">Сталась невідома помилка</string>
+    <string name="error_message_retry">Повторити</string>
 </resources>
